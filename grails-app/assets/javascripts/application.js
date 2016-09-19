@@ -6,15 +6,28 @@
 // to create separate JavaScript files as needed.
 //
 //= require jquery
-//= require_tree .
+//= require jquery-ui/jquery-ui
+//= require jquery.inputmask.bundle
+//= require jquery.toaster
+//= require bootstrap
+//= require bootstrap-dialog/bootstrap-dialog
+//= require bootstrap-flash/bootstrap-flash
 //= require_self
 
 if (typeof jQuery !== 'undefined') {
 	(function($) {
-		$('#spinner').ajaxStart(function() {
-			$(this).fadeIn();
+		$(document).ajaxStart(function() {
+			$('#overlay').fadeIn();
 		}).ajaxStop(function() {
-			$(this).fadeOut();
+			$('#overlay').fadeOut();
+		}).ajaxError(function( event, jqxhr, settings, thrownError ) {
+			var response = JSON.parse(jqxhr.responseText);
+			$('#overlay').fadeOut();
+			if ('error' in response) {
+				$.toaster({ priority : 'danger', title : 'Error', message : response.error});
+			} else {
+				$.toaster({ priority : 'danger', title : 'Error', message : 'Error execuuting the AJAX request'});
+			}
 		});
 	})(jQuery);
 }
