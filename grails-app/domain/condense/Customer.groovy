@@ -13,7 +13,7 @@ class Customer {
 	Date lastUpdated
 	
 	static hasMany = [
-		subscriptions: Subsciption
+		subscriptions: Subscription
 	]
 	
     static constraints = {

@@ -2,9 +2,9 @@ package condense
 
 import java.util.Date;
 
-class Subsciption {
+class Subscription {
 	
-	String subscriptionid
+	String subscriptionId
 
 	/* Automatic timestamping of GORM */
 	Date dateCreated
@@ -15,23 +15,23 @@ class Subsciption {
 	static hasMany = [usageRecors: UsageRecord]
 	
     static constraints = {
-		subscriptionid blank:false, unique:true
+		subscriptionId blank:false, unique:true
     }
 	
 	public String toString() {
-		return "${subscriptionid}";
+		return "${subscriptionId}";
 	}
 	
 	boolean equals(o) {
 		if (this.is(o)) return true
 		if (getClass() != o.class) return false
-		Subsciption subsciption = (Subsciption) o
+		Subscription subsciption = (Subscription) o
 		if (id != null && id == subsciption.id) return true
-		if (subscriptionid != subsciption.subscriptionid) return false
+		if (subscriptionId != subsciption.subscriptionId) return false
 		return true
 	}
 	
 	int hashCode() {
-		return subscriptionid.hashCode()
+		return subscriptionId.hashCode()
 	}
 }

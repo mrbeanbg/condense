@@ -18,7 +18,7 @@ class UsageRecord {
 	Date dateCreated
 	Date lastUpdated
 	
-	static belongsTo = [subscription: Subsciption]
+	static belongsTo = [subscription: Subscription]
 	
     static constraints = {
 		startTime nullable: true
