@@ -5,6 +5,7 @@ import java.util.Date;
 class TierDefinition {
 
 	Long startQuantity
+	Long includedQuantity
 	BigDecimal price
 	
 	/* Automatic timestamping of GORM */
@@ -18,6 +19,7 @@ class TierDefinition {
 	
     static constraints = {
 		startQuantity blank: false
+		includedQuantity nullable: true
 		price blank: false
     }
 	
