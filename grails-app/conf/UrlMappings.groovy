@@ -10,6 +10,8 @@ class UrlMappings {
         "/"(view:"/index")
         "500"(view:'/error')
 		
-		"/rest/customers"(resources: 'restCustomers')
+		"/rest/customers"(resources: 'restCustomers') {
+			action = [GET:"index", PUT:"update", POST:"save"]
+		}
 	}
 }
