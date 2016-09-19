@@ -12,7 +12,7 @@ class BootStrap {
 		new Subcategory(name: "API Management").save()
 		new Region(name: "AU East").save()
 		
-		pricingBookService.importPricingBook(new Date())
+		//pricingBookService.importPricingBook(new Date())
     }
     def destroy = {
     }

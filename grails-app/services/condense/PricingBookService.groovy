@@ -5,16 +5,17 @@ import grails.transaction.Transactional
 @Transactional
 class PricingBookService {
 
-    def importPricingBook(Date inEffectFrom) {
-		def newPricingBook = new PricingBook(fromDate: inEffectFrom).save()
+    def importPricingBook(Date inEffectFrom, String csvFileContent) {
+		print "asdasd"
+		def newPricingBook = new PricingBook(fromDate: inEffectFrom)//.save()
 		
 		def allCategories = Category.list()
 		def allSubCategories = Subcategory.list()
 		def allRegions = Region.list()
 		def allProducts = Product.list()
-		
+		print allProducts
 		def firstRowSkipped = false;
-		new File("C:\\Users\\Ani\\Downloads\\pricing.csv").eachCsvLine { tokens ->
+		csvFileContent.eachCsvLine { tokens ->
 			if (firstRowSkipped) {
 				def newCategory = new Category(name: tokens[1])
 				if (!allCategories.contains(newCategory)) {
@@ -57,12 +58,13 @@ class PricingBookService {
 			firstRowSkipped = true
 		}
 		
-		newPricingBook.save()
+		newPricingBook.save flush:true
 		
 		
 		print Category.count()
 		print Subcategory.count()
 		print Region.count()
 		print Product.count()
+		return newPricingBook
     }
 }
