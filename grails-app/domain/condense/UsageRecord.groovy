@@ -25,7 +25,7 @@ class UsageRecord {
 		endTime nullable: true
 		quantity nullable: true
 		unit nullable: true
-		meteteredId nullable: true
+		meteredId nullable: true
 		category nullable: true
 		subcategory nullable: true
 		name nullable: true
