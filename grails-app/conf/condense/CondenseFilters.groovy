@@ -1,5 +1,7 @@
 package condense
 
+import org.codehaus.groovy.grails.web.sitemesh.GroovyPageLayoutFinder
+
 class CondenseFilters {	def passwordEncoder
 	static final AJAX_LAYOUT = "ajax"
 
