@@ -30,7 +30,7 @@ class Customer {
 		if (this.is(o)) return true
 		if (getClass() != o.class) return false
 		Customer customer = (Customer) o
-		if (id == customer.id) return true
+		if (id != null && id == customer.id) return true
 		if (cspCustomerId != customer.cspCustomerId) return false
 		return true
 	}

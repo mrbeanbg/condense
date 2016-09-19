@@ -37,7 +37,7 @@ class SupportTier {
 		if (this.is(o)) return true
 		if (getClass() != o.class) return false
 		SupportTier supportTier = (SupportTier) o
-		if (id == supportTier.id) return true
+		if (id != null && id == supportTier.id) return true
 		if (supportPlan != supportTier.supportPlan || startAmount != supportTier.startAmount) return false
 		return true
 	}

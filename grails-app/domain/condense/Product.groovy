@@ -36,8 +36,8 @@ class Product {
 		if (this.is(o)) return true
 		if (getClass() != o.class) return false
 		Product product = (Product) o
-		if (id == product.id) return true
-		if (guid != pricingBook.guid) return false
+		if (id != null && id == product.id) return true
+		if (guid != product.guid) return false
 		return true
 	}
 	

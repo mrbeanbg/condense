@@ -15,4 +15,12 @@ class CurrencyRate {
 		currency blank: false, unique: true
 		rate blank: false
     }
+	
+	public String toString() {
+		return "${currency} - ${rate}";
+	}
+	
+	int hashCode() {
+		return currency.hashCode()
+	}
 }

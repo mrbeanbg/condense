@@ -27,7 +27,7 @@ class Region {
 		if (this.is(o)) return true
 		if (getClass() != o.class) return false
 		Region region = (Region) o
-		if (id == region.id) return true
+		if (id != null && id == region.id) return true
 		if (name != region.name) return false
 		return true
 	}

@@ -20,18 +20,18 @@ class TierDefinition {
     static constraints = {
 		startQuantity blank: false
 		includedQuantity nullable: true
-		price blank: false
+		price blank: false, size:30, scale: 10
     }
 	
 	public String toString() {
-		return "${pricingBook.fromDate} - ${product.name} - SQ:${startQuantity} - ${price}";
+		return "${pricingBook?.fromDate} - ${product.name} - SQ:${startQuantity} - ${price}";
 	}
 	
 	boolean equals(o) {
 		if (this.is(o)) return true
 		if (getClass() != o.class) return false
 		TierDefinition tierDefinition = (TierDefinition) o
-		if (id == tierDefinition.id) return true
+		if (id != null && id == tierDefinition.id) return true
 		if (pricingBook != tierDefinition.pricingBook || startQuantity != tierDefinition.startQuantity) return false
 		return true
 	}

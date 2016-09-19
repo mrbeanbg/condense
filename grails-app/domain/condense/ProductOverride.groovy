@@ -35,7 +35,7 @@ class ProductOverride {
 		if (this.is(o)) return true
 		if (getClass() != o.class) return false
 		ProductOverride productOverride = (ProductOverride) o
-		if (id == productOverride.id) return true
+		if (id != null && id == productOverride.id) return true
 		if (pricingSet != productOverride.pricingSet || startQuantity != productOverride.startQuantity) return false
 		return true
 	}

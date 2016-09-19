@@ -26,7 +26,7 @@ class Category {
 		if (this.is(o)) return true
 		if (getClass() != o.class) return false
 		Category category = (Category) o
-		if (id == category.id) return true
+		if (id != null && id == category.id) return true
 		if (name != category.name) return false
 		return true
 	}

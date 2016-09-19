@@ -26,7 +26,7 @@ class Subcategory {
 		if (this.is(o)) return true
 		if (getClass() != o.class) return false
 		Subcategory subcategory = (Subcategory) o
-		if (id == subcategory.id) return true
+		if (id != null && id == subcategory.id) return true
 		if (name != subcategory.name) return false
 		return true
 	}

@@ -30,7 +30,7 @@ class PricingSet {
 		if (this.is(o)) return true
 		if (getClass() != o.class) return false
 		PricingSet pricingSet = (PricingSet) o
-		if (id == pricingSet.id) return true
+		if (id != null && id == pricingSet.id) return true
 		if (name != pricingSet.name) return false
 		return true
 	}

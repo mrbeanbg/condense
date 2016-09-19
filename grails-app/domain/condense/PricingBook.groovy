@@ -24,7 +24,7 @@ class PricingBook {
 		if (this.is(o)) return true
 		if (getClass() != o.class) return false
 		PricingBook pricingBook = (PricingBook) o
-		if (id == pricingBook.id) return true
+		if (id != null && id == pricingBook.id) return true
 		if (fromDate != pricingBook.fromDate) return false
 		return true
 	}

@@ -31,7 +31,7 @@ class SupportPlan {
 		if (this.is(o)) return true
 		if (getClass() != o.class) return false
 		SupportPlan supportPlan = (SupportPlan) o
-		if (id == supportPlan.id) return true
+		if (id != null && id == supportPlan.id) return true
 		if (name != supportPlan.name) return false
 		return true
 	}

@@ -26,7 +26,7 @@ class Subsciption {
 		if (this.is(o)) return true
 		if (getClass() != o.class) return false
 		Subsciption subsciption = (Subsciption) o
-		if (id == subsciption.id) return true
+		if (id != null && id == subsciption.id) return true
 		if (subscriptionid != subsciption.subscriptionid) return false
 		return true
 	}
