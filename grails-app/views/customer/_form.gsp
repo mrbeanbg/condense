@@ -4,7 +4,7 @@
 
 <div class="form-group fieldcontain ${hasErrors(bean: customerInstance, field: 'cspCustomerId', 'error')} required">
 	<label class="control-label col-md-2" for="cspCustomerId">
-		<g:message code="customer.cspCustomerId.label" default="Csp Customer Id" />
+		<g:message code="customer.cspCustomerId.label" default="CSP Customer Id" />
 		<span class="required-indicator">*</span>
 	</label>
 	<span class="controls col-md-10"><g:textField name="cspCustomerId" required="" value="${customerInstance?.cspCustomerId}"/>
@@ -32,18 +32,45 @@
 <div class="form-group fieldcontain ${hasErrors(bean: customerInstance, field: 'subscriptions', 'error')} ">
 	<label class="control-label col-md-2" for="subscriptions">
 		<g:message code="customer.subscriptions.label" default="Subscriptions" />
-		
 	</label>
 	<span class="controls col-md-10">
-<ul class="one-to-many">
-<g:each in="${customerInstance?.subscriptions?}" var="s">
-    <li><g:link controller="subsciption" action="show" id="${s.id}">${s?.encodeAsHTML()}</g:link></li>
-</g:each>
-<li class="add">
-<g:link controller="subsciption" action="create" params="['customer.id': customerInstance?.id]">${message(code: 'default.add.label', args: [message(code: 'subsciption.label', default: 'Subsciption')])}</g:link>
-</li>
-</ul>
-
-</span>
+		<g:message code="product.subscription.label" default="Subscription" />
+		<g:textField name="subscription.subscriptionId" id="subscription-detail-id" value=""/>
+		<a href="#" id="addSubscriptionId" class="btn btn-warning"><g:message code="add.label" default="Add" /></a>
+	</span>
+	<div class="alert alert-danger hide col-md-10" role="alert" id="unable-to-add-row">
+		<g:message code="customer.cannot.add.subscription" default="Please provide subscriptonId that belongig to this customer" />
+	</div>
+</div>
+<div class="form-group fieldcontain ${hasErrors(bean: customerInstance, field: 'subscriptions', 'error')} ">
+	<div class="col-md-2">&nbsp;</div>
+	<div class="pre-scrollable col-md-10" id="detailsContent">
+		<g:render template="detail_table"/>
+	</div>
 </div>
 
+<asset:script>
+$(document).ready(function(){
+	$("#addSubscriptionId").unbind().click(function () {
+		if ($('#subscription-detail-id').val().trim() == "" || $('#subscription-detail-id').val().trim() == "") {
+			$("#unable-to-add-row").removeClass('hide');
+			return false;
+		} else {
+			$("#unable-to-add-row").addClass('hide');
+		}
+		jQuery.ajax({
+			type: 'POST',
+			url: '<g:createLink controller="customer" action="ajax_add_row" />',
+			data: {
+				'subscriptionId': $('#subscription-detail-id').val().trim()
+			},
+			success: function(data,textStatus) {
+				 	jQuery('#detailsContent').html(data);
+			},
+			error: function(XMLHttpRequest,textStatus,errorThrown){
+			}
+		});
+		return false;
+	});
+});
+</asset:script>

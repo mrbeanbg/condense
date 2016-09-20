@@ -20,8 +20,76 @@ class CustomerController {
     }
 
     def create() {
+		session['detailRows'] = []
         respond new Customer(params)
     }
+	
+	def ajax_add_row() {
+		def recordToValidate = new Subscription(customer: new Customer(),
+			subscriptionId: params.subscriptionId)
+		def subscriptionId = recordToValidate.subscriptionId
+		
+		if (!recordToValidate.validate()) {
+			recordToValidate.discard()
+			respond(recordToValidate.errors,
+				model:
+				[
+					recordToValidate: recordToValidate,
+					detailRows: session['detailRows'],
+					showAction: true
+				])
+			return
+		}
+		
+		if ((session['detailRows'] != null || !session['detailRows'].empty) &&
+			session['detailRows'].find { it.subscriptionId == subscriptionId }) {
+			recordToValidate.errors.reject("Already existing subscritption Id", "Already existing subscritption Id")
+			respond(recordToValidate.errors,
+				model:
+				[
+					recordToValidate: recordToValidate,
+					detailRows: session['detailRows'],
+					showAction: true
+				])
+			return
+		}
+		
+		recordToValidate.discard()
+		
+		if (session['detailRows'] == null) {
+			session['detailRows'] = []
+		}
+		session['detailRows'] << [subscriptionId: subscriptionId]
+		respond(
+			session['detailRows'],
+			model:
+			[
+				detailRows: session['detailRows'],
+				showAction: true
+			])
+	}
+	
+	def ajax_delete_row() {
+		if (!params.containsKey('subscriptionId') || params.subscriptionId == null) {
+			render status:400
+			return
+		}
+		
+		session['detailRows'].removeAll {
+			it.subscriptionId == params.subscriptionId
+		}
+		
+		respond(
+			session['detailRows'],
+			[
+				view:'ajax_add_row',
+				model:
+				[
+					detailRows: session['detailRows'],
+					showAction: true
+				]
+			])
+	}
 
     @Transactional
     def save(Customer customerInstance) {
@@ -36,6 +104,10 @@ class CustomerController {
         }
 
         customerInstance.save flush:true
+		
+		session['detailRows'].each {
+			new Subscription(customer: customerInstance, subscriptionId: it.subscriptionId).save(flush:true)
+		}
 
         request.withFormat {
             form multipartForm {
@@ -47,7 +119,16 @@ class CustomerController {
     }
 
     def edit(Customer customerInstance) {
-        respond customerInstance
+		session['detailRows'] = customerInstance.subscriptions
+		session['initialSubscriptionsIds'] = customerInstance.subscriptions.collect {it.subscriptionId}
+		print session['initialSubscriptionsIds']
+		respond(
+			customerInstance,
+			model:
+			[
+				detailRows: session['detailRows'],
+				showAction: true
+			])
     }
 
     @Transactional
@@ -61,6 +142,27 @@ class CustomerController {
             respond customerInstance.errors, view:'edit'
             return
         }
+		
+		// calculate all subscriptionIds that needs to be deleted
+		def subscriptionIdsToDelete = []
+		session['initialSubscriptionsIds'].each {
+			def currentSubscriptionId = it
+			if (!session['detailRows'].find {it.subscriptionId == currentSubscriptionId}) {
+				subscriptionIdsToDelete << currentSubscriptionId
+			}
+			//Subscription.delete()
+		}
+		if (!subscriptionIdsToDelete.empty) {
+			Subscription.where {
+				subscriptionId in subscriptionIdsToDelete
+			}.deleteAll()
+		}
+		session['detailRows'].each {
+			if (!session['initialSubscriptionsIds'].contains(it.subscriptionId)) {
+				new Subscription(customer: customerInstance,
+					subscriptionId: it.subscriptionId).save flush:true
+			}
+		}
 
         customerInstance.save flush:true
 

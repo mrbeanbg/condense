@@ -17,6 +17,9 @@
 		<g:layoutHead/>
 	</head>
 	<body>
+		<div id="overlay">
+	        <asset:image src="ajax-loader.gif" alt="Loading" id="loading-indicator"/>
+	    </div>
 		<div class="navbar navbar-static-top">
 			<div class="navbar-inner">
 				<div class="container">
@@ -27,5 +30,6 @@
 		<g:layoutBody/>
 		<div class="footer" role="contentinfo"></div>
 		<div id="spinner" class="spinner" style="display:none;"><g:message code="spinner.alt" default="Loading&hellip;"/></div>
+		<asset:deferredScripts/>
 	</body>
 </html>

@@ -52,6 +52,17 @@
 						
 					</dl>
 					</g:if>
+					
+					<g:if test="${customerInstance?.subscriptions}">
+					<dl class="dl-horizontal">
+						<dt id="subscriptions-label" class="property-label"><g:message code="customer.subscriptions.label" default="Subscriptions" /></dt>
+						
+							<g:each in="${customerInstance.subscriptions}" var="s">
+							<dd class="property-value" aria-labelledby="subscriptions-label">${s?.encodeAsHTML()}</dd>
+							</g:each>
+						
+					</dl>
+					</g:if>
 				
 					<g:if test="${customerInstance?.dateCreated}">
 					<dl class="dl-horizontal">
@@ -67,17 +78,6 @@
 						<dt id="lastUpdated-label" class="property-label"><g:message code="customer.lastUpdated.label" default="Last Updated" /></dt>
 						
 							<dd class="property-value" aria-labelledby="lastUpdated-label"><g:formatDate date="${customerInstance?.lastUpdated}" /></dd>
-						
-					</dl>
-					</g:if>
-				
-					<g:if test="${customerInstance?.subscriptions}">
-					<dl class="dl-horizontal">
-						<dt id="subscriptions-label" class="property-label"><g:message code="customer.subscriptions.label" default="Subscriptions" /></dt>
-						
-							<g:each in="${customerInstance.subscriptions}" var="s">
-							<dd class="property-value" aria-labelledby="subscriptions-label"><g:link controller="subsciption" action="show" id="${s.id}">${s?.encodeAsHTML()}</g:link></dd>
-							</g:each>
 						
 					</dl>
 					</g:if>
