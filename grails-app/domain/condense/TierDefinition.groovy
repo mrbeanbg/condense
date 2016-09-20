@@ -24,7 +24,7 @@ class TierDefinition {
     }
 	
 	public String toString() {
-		return "${pricingBook?.fromDate} - ${product.name} - SQ:${startQuantity} - ${price}";
+		return "${pricingBook?.fromDate} - Category:${product?.category?.name} - SubCategory:${product?.subcategory?.name} - ProductName:${product?.name} - SQ:${startQuantity} - Price:${price}";
 	}
 	
 	boolean equals(o) {

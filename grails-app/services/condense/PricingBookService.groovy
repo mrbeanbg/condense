@@ -38,9 +38,9 @@ class PricingBookService {
 				
 				if (!allProducts.contains(newProduct)) {
 					
-					def newProductCategory = allCategories.find { it.name = tokens[1]}
-					def newProductSubcategory = allSubCategories.find { it.name = tokens[2]}
-					def newProductRegion = allRegions.find { it.name = tokens[3]}
+					def newProductCategory = allCategories.find { it.name == tokens[1]}
+					def newProductSubcategory = allSubCategories.find { it.name == tokens[2]}
+					def newProductRegion = allRegions.find { it.name == tokens[3]}
 					
 					newProduct.category = newProductCategory
 					newProduct.subcategory = newProductSubcategory

@@ -2,7 +2,7 @@
 <html>
 	<head>
 		<meta name="layout" content="main">
-		<g:set var="entityName" value="${message(code: 'pricingBook.label', default: 'PricingBook')}" />
+		<g:set var="entityName" value="${message(code: 'pricingBook.label', default: 'Pricing Book')}" />
 		<title>Import Pricing Book</title>
 	</head>
 	<body>
