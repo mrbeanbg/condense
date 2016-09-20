@@ -33,6 +33,14 @@ class BootStrap {
 			return map
 		}
 		
+		JSON.registerObjectMarshaller(SupportPlan) {
+			def map= [:]
+			map['id'] = it.id
+			map['name'] = it.name
+			map['minCharge'] = it.minCharge
+			map['maxCharge'] = it.maxCharge
+			return map
+		}
     }
     def destroy = {
     }

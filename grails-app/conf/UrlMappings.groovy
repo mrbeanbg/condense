@@ -19,6 +19,7 @@ class UrlMappings {
 		"/rest/subscriptions" (resources: 'restSubscriptions') {
 			action = [GET:"index", POST:"save"]
 		}
+		"/rest/supportPlans" (resources: 'restSupportPlans')
 
 	}
 }
