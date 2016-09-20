@@ -10,10 +10,6 @@ class RestCustomersController {
 		respond Customer.list()
 	}
 	
-	def create() {
-		
-	}
-	
 	def show(Customer customer) {
 		if(customer == null) {
 			render status:404

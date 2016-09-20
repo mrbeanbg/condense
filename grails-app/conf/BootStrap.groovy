@@ -24,6 +24,15 @@ class BootStrap {
 			map['supportPlanId'] = it.supportPlan?.id
 			return map
 		}
+		
+		JSON.registerObjectMarshaller(Subscription) {
+			def map= [:]
+			map['id'] = it.id
+			map['subscriptionId'] = it.subscriptionId
+			map['customerId'] = it.customer.id
+			return map
+		}
+		
     }
     def destroy = {
     }
