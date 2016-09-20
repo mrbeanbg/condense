@@ -37,6 +37,16 @@ class RestCustomersController {
 			return
 		}
 		
+		def newCspCustomerId = request.JSON?.cspCustomerId
+		if (newCspCustomerId == null) {
+			render status: 400, text: "cspCustomerId is required"
+			return
+
+		} else if (Customer.find{cspCustomerId == newCspCustomerId} != null) {
+			render status: 409, text: "CSP customer ${newCspCustomerId} already exists"
+			return
+		}
+		
 		def pricingSet = PricingSet.find{id == pricingSetId}
 		
 		if (pricingSet == null) {
@@ -47,7 +57,11 @@ class RestCustomersController {
 		def supportPlanId = request.JSON?.supportPlanId?.toLong()
 		def supportPlan
 		if (supportPlanId != null) {
-			supportPlan = SupportPlan.find{id == pricingSetId}
+			supportPlan = SupportPlan.find{id == supportPlanId}
+			if (supportPlan == null) {
+				render status: 400, text: "Invalid support plan ID"
+				return
+			}
 		}
 		
 		def customer = new Customer(
@@ -63,5 +77,46 @@ class RestCustomersController {
 		}
 		
 		respond customer.refresh(), [status: 201]
+	}
+	
+	@Transactional
+	def update() {
+		Customer customer = Customer.get(params.id.toLong())
+		if(customer == null) {
+			render status:404
+		}
+		def cspCustomerId = request.JSON?.cspCustomerId?.toLong()
+		if (cspCustomerId) {
+			customer.cspCustomerId = cspCustomerId
+		}
+		
+		def pricingSetId = request.JSON?.pricingSetId?.toLong()
+		if (pricingSetId != null) {
+			def pricingSet = PricingSet.find{id == pricingSetId}
+			if (pricingSet == null) {
+				render status: 400, text: "Invalid pricing set ID"
+				return
+			}
+			customer.pricingset = pricingSet
+		}
+		
+		def supportPlanId = request.JSON?.supportPlanId?.toLong()
+		if (supportPlanId != null) {
+			def supportPlan = SupportPlan.find{id == supportPlanId}
+			if (supportPlan == null) {
+				render status: 400, text: "Invalid support plan ID"
+				return
+			}
+			customer.supportPlan = supportPlan
+		}
+		
+		if (!customer.save(flush:true, failOnError:true)) {
+			if (customer.hasErrors()) {
+				respond customer.errors
+				return
+			}
+		}
+		
+		respond customer.refresh()
 	}
 }

@@ -13,5 +13,6 @@ class UrlMappings {
 		"/rest/customers"(resources: 'restCustomers') {
 			action = [GET:"index", PUT:"update", POST:"save"]
 		}
+
 	}
 }
