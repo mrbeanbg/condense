@@ -45,7 +45,7 @@
 						
 							<td>${fieldValue(bean: pricingSetInstance, field: "name")}</td>
 						
-							<td>${fieldValue(bean: pricingSetInstance, field: "defaultOverride")}</td>
+							<td>${fieldValue(bean: pricingSetInstance, field: "defaultOverride")} %</td>
 						
 							<td><g:formatDate date="${pricingSetInstance.dateCreated}" /></td>
 						

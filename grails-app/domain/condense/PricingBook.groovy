@@ -1,5 +1,6 @@
 package condense
 
+import java.text.SimpleDateFormat
 import java.util.Date;
 
 class PricingBook {
@@ -17,7 +18,8 @@ class PricingBook {
     }
 	
 	public String toString() {
-		return "${fromDate}";
+		def fromDateRepresentation = (fromDate == null) ? "" : new SimpleDateFormat('yyyy-M-d').format(fromDate)
+		return "${fromDateRepresentation}";
 	}
 	
 	boolean equals(o) {

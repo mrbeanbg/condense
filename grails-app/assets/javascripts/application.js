@@ -21,10 +21,14 @@ if (typeof jQuery !== 'undefined') {
 		}).ajaxStop(function() {
 			$('#overlay').fadeOut();
 		}).ajaxError(function( event, jqxhr, settings, thrownError ) {
-			var response = JSON.parse(jqxhr.responseText);
 			$('#overlay').fadeOut();
-			if ('error' in response) {
-				$.toaster({ priority : 'danger', title : 'Error', message : response.error});
+			if (jqxhr.responseText != "") {
+				var response = JSON.parse(jqxhr.responseText);
+				if ('error' in response) {
+					$.toaster({ priority : 'danger', title : 'Error', message : response.error});
+				} else {
+					$.toaster({ priority : 'danger', title : 'Error', message : 'Error execuuting the AJAX request'});
+				}
 			} else {
 				$.toaster({ priority : 'danger', title : 'Error', message : 'Error execuuting the AJAX request'});
 			}

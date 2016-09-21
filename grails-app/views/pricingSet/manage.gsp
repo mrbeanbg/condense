@@ -39,7 +39,7 @@
 					<dl class="dl-horizontal">
 						<dt id="defaultOverride-label" class="property-label"><g:message code="pricingSet.defaultOverride.label" default="Default Override" /></dt>
 						
-							<dd class="property-value" aria-labelledby="defaultOverride-label"><g:fieldValue bean="${pricingSetInstance}" field="defaultOverride"/></dd>
+							<dd class="property-value" aria-labelledby="defaultOverride-label"><g:fieldValue bean="${pricingSetInstance}" field="defaultOverride"/> %</dd>
 						
 					</dl>
 					</g:if>
@@ -73,12 +73,87 @@
 					</dl>
 					</g:if>
 				</ul>
-				<div class="col-md-12">
-					<hr />
-					<p class="property-label"><b>Prices and Overrides:</b></p>
-					<div class="col-md-12">ProductCategory 1</div>
-				</div>
+				
+				<g:if test="${categories?.size() > 0}">
+					<div class="col-md-12">
+						<hr />
+						<div class="col-md-3"><b>Prices and Overrides:</b></div>
+						<div class="col-md-3 pull-right">
+							<g:message code="pricingBook.label" default="Pricing&nbsp;Book" />
+							<g:select id="currentPricingBook" name="currentPricingBook"
+									from="${pricingBooks}"
+									optionKey="id"/>
+						</div>
+						
+						<g:each in="${categories?}" var="c" status="i">
+							<div class="well col-md-12">
+								<div class="col-md-12">
+									${c.categoryRepresentation}
+									<div class="pull-right">
+										<a href="#"
+											data-catindex="${i}" data-categoryid="${c.categoryId}" data-subcategoryid="${c.subcategoryId}"
+											class="btn btn-warning manage-products">
+											<g:message code="manageorview.producst.label" default="Manage/View Products"/>
+										</a>
+									</div>
+								</div>
+								<div class="col-md-12" id="products-${i}" class="wellcol-md-12"></div>
+							</div>
+						</g:each>
+					</div>
+				</g:if>
 			</div>
 		</div>
 	</body>
 </html>
+
+
+<asset:script>
+$(document).ready(function(){
+	var currentCatIndex = null;
+	var currentCategoryId = null;
+	var currentSubCategoryId = null;
+	var currentPricingBookId = null;
+	
+	$(".manage-products").unbind().click(function () {
+		$('[id^=products-]').html("");
+		currentCatIndex = $(this).data("catindex");
+		currentCategoryId = $(this).data("categoryid");
+		currentSubCategoryId = $(this).data("subcategoryid");
+		if (currentSubCategoryId != null &&
+			currentSubCategoryId == "null" || currentSubCategoryId == "") {
+			currentSubCategoryId = null;
+		}
+		
+		currentPricingBookId = $("#currentPricingBook").val().trim();
+
+		ajaxGetProducts();
+		return false;
+	});
+	$("#currentPricingBook").unbind().change(function () {
+		currentPricingBookId = $("#currentPricingBook").val().trim();
+		
+		if (currentCatIndex != null && currentCategoryId != null) {
+			ajaxGetProducts();
+		}
+	});
+	
+	function ajaxGetProducts() {
+		jQuery.ajax({
+			type: 'GET',
+			url: '<g:createLink action="ajax_get_products" />',
+			data: {
+				'currentCategoryId': currentCategoryId,
+				'currentSubCategoryId': currentSubCategoryId,
+				'currentPricingBookId': currentPricingBookId
+			},
+			success: function(data,textStatus) {
+					//jQuery('.manage-products').attr("disabled", true);
+				 	jQuery('#products-' + currentCatIndex).html(data);
+			},
+			error: function(XMLHttpRequest,textStatus,errorThrown){
+			}
+		});
+	}
+});
+</asset:script>

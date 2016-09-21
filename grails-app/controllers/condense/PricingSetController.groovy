@@ -17,7 +17,38 @@ class PricingSetController {
     }
 
     def manage(PricingSet pricingSetInstance) {
-        respond pricingSetInstance
+		def allCategoriesCombinations = Product.createCriteria().list {
+			projections {
+				property "category.id"
+				property "subcategory.id"
+				groupProperty "id"
+				groupProperty "category"
+				groupProperty "subcategory"
+				groupProperty "region"
+			}
+			and {
+				order "id", "asc"
+				order "category", "asc"
+				order "subcategory", "asc"
+				order "region", "asc"
+			}
+		}
+		def categories = []
+		allCategoriesCombinations.each {
+			def newCategoryCombination = [categoryId: it[0],
+				subcategoryId: it[1],
+				categoryRepresentation: (it[1]==null) ? "${it[3]}":"${it[3]} - ${it[4]}"]
+			if (!categories.contains(newCategoryCombination)) categories << newCategoryCombination
+		}
+		
+		def pricingBooks = PricingBook.createCriteria().list {
+			order "fromDate", "desc"
+		}
+		
+        respond pricingSetInstance, model: [
+				categories: categories,
+				pricingBooks: pricingBooks
+			]
     }
 
     def create() {
@@ -109,4 +140,23 @@ class PricingSetController {
             '*'{ render status: NOT_FOUND }
         }
     }
+	
+	def ajax_get_products() {
+		def currentPricingBook = PricingBook.get(params.currentPricingBookId)
+		def currentCategory = Category.get(params.currentCategoryId)
+		def currentSubCategory = Subcategory.get(params.currentSubCategoryId)
+		
+		def matchingTiers = TierDefinition.where {
+			pricingBook == currentPricingBook
+			product.category == currentCategory
+			if (currentSubCategory) {
+				product.subcategory == currentSubCategory
+			}
+			order "id"
+		}.list()
+		
+		respond matchingTiers, model: [
+				matchingTiers: matchingTiers
+			]
+	}
 }
