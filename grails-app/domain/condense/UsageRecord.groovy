@@ -23,7 +23,7 @@ class UsageRecord {
     static constraints = {
 		startTime nullable: true
 		endTime nullable: true
-		quantity nullable: true
+		quantity nullable: true, size: 30, scale: 15
 		unit nullable: true
 		meteredId nullable: true
 		category nullable: true

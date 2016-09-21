@@ -16,8 +16,7 @@ class ProductOverride {
 	
 	static belongsTo = [
 		pricingSet: PricingSet,
-		product: Product,
-		region: Region
+		product: Product
 	]
 	
 
@@ -41,7 +40,7 @@ class ProductOverride {
 	}
 	
 	int hashCode() {
-		return toString.hashCode()
+		return toString().hashCode()
 	}
 	
 	enum OverrideType {

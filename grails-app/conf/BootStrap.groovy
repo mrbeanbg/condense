@@ -15,6 +15,7 @@ class BootStrap {
 		new SupportPlan(name: "New Support Plan 2").save()
 		def newCustomer = new Customer(cspCustomerId: "customer-123", pricingSet: newPricingSet, supportPlan: newSupportPlan).save()
 		def newSubscription = new Subscription(subscriptionId: "subscription-123", customer: newCustomer).save()
+		new Subscription(subscriptionId: "subscription-ABC", customer: newCustomer).save()
 		
 		JSON.registerObjectMarshaller(Customer) {
 			def map= [:]

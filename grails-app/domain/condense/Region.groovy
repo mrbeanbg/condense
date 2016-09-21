@@ -11,8 +11,7 @@ class Region {
 	Date lastUpdated
 	
 	static hasMany = [
-		products: Product,
-		productOverrides: ProductOverride
+		products: Product
 	]
 	
 	static constraints = {
