@@ -61,7 +61,7 @@ class PricingSetControllerSpec extends Specification {
 
     void "Test that the show action returns the correct model"() {
         when:"The show action is executed with a null domain"
-            controller.show(null)
+            controller.manage(null)
 
         then:"A 404 error is returned"
             response.status == 404
@@ -69,7 +69,7 @@ class PricingSetControllerSpec extends Specification {
         when:"A domain instance is passed to the show action"
             populateValidParams(params)
             def pricingSet = new PricingSet(params)
-            controller.show(pricingSet)
+            controller.manage(pricingSet)
 
         then:"A model is populated containing the domain instance"
             model.pricingSetInstance == pricingSet

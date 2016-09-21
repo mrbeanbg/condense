@@ -34,6 +34,8 @@
 							<g:sortableColumn property="dateCreated" title="${message(code: 'pricingSet.dateCreated.label', default: 'Date Created')}" />
 						
 							<g:sortableColumn property="lastUpdated" title="${message(code: 'pricingSet.lastUpdated.label', default: 'Last Updated')}" />
+							
+							<th><g:message code="actions.lable" default="Actions"/></th>
 						
 						</tr>
 					</thead>
@@ -41,13 +43,23 @@
 					<g:each in="${pricingSetInstanceList}" status="i" var="pricingSetInstance">
 						<tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
 						
-							<td><g:link action="show" id="${pricingSetInstance.id}">${fieldValue(bean: pricingSetInstance, field: "name")}</g:link></td>
+							<td>${fieldValue(bean: pricingSetInstance, field: "name")}</td>
 						
 							<td>${fieldValue(bean: pricingSetInstance, field: "defaultOverride")}</td>
 						
 							<td><g:formatDate date="${pricingSetInstance.dateCreated}" /></td>
 						
 							<td><g:formatDate date="${pricingSetInstance.lastUpdated}" /></td>
+							
+							<td>
+								<g:form url="[resource:pricingSetInstance, action:'delete']" method="DELETE">
+									<fieldset class="buttons">
+										<g:link action="edit" id="${pricingSetInstance.id}" class="btn btn-warning"><g:message code="edit.label" default="Edit"/></g:link>
+										<g:link action="manage" id="${pricingSetInstance.id}" class="btn btn-warning"><g:message code="manage.prices.label" default="Manage Prices"/></g:link>
+										<g:actionSubmit class="btn btn-danger" action="delete" value="${message(code: 'default.button.delete.label', default: 'Delete')}" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');" />
+									</fieldset>
+								</g:form>
+							</td>
 						
 						</tr>
 					</g:each>

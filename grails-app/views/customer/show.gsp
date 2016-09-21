@@ -39,7 +39,7 @@
 					<dl class="dl-horizontal">
 						<dt id="pricingSet-label" class="property-label"><g:message code="customer.pricingSet.label" default="Pricing Set" /></dt>
 						
-							<dd class="property-value" aria-labelledby="pricingSet-label"><g:link controller="pricingSet" action="show" id="${customerInstance?.pricingSet?.id}">${customerInstance?.pricingSet?.encodeAsHTML()}</g:link></dd>
+							<dd class="property-value" aria-labelledby="pricingSet-label"><g:link controller="pricingSet" action="manage" id="${customerInstance?.pricingSet?.id}">${customerInstance?.pricingSet?.encodeAsHTML()}</g:link></dd>
 						
 					</dl>
 					</g:if>

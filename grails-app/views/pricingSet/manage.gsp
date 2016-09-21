@@ -5,7 +5,7 @@
 	<head>
 		<meta name="layout" content="main">
 		<g:set var="entityName" value="${message(code: 'pricingSet.label', default: 'Pricing Set')}" />
-		<title><g:message code="default.show.label" args="[entityName]" /></title>
+		<title><g:message code="default.manage.label" default="Manage ${entityName}" args="[entityName]" /></title>
 	</head>
 	<body>
 		<div class="container">
@@ -17,7 +17,7 @@
 				</ul>
 			</div>
 			<div id="show-pricingSet" class="content scaffold-show" role="main">
-				<h1><g:message code="default.show.label" args="[entityName]" /></h1>
+				<h1><g:message code="default.manage.label" default="Manage ${entityName}" args="[entityName]" /></h1>
 				<g:if test="${flash.message}">
 				<div class="alert alert-success" role="status">${flash.message}</div>
 				</g:if>
@@ -49,7 +49,8 @@
 						<dt id="customers-label" class="property-label"><g:message code="pricingSet.customers.label" default="Customers" /></dt>
 						
 							<g:each in="${pricingSetInstance.customers}" var="c">
-							<dd class="property-value" aria-labelledby="customers-label"><g:link controller="customer" action="show" id="${c.id}">${c?.encodeAsHTML()}</g:link></dd>
+							<dd class="property-value" aria-labelledby="customers-label">
+								${c?.encodeAsHTML()}</dd>
 							</g:each>
 						
 					</dl>
@@ -69,28 +70,14 @@
 						<dt id="lastUpdated-label" class="property-label"><g:message code="pricingSet.lastUpdated.label" default="Last Updated" /></dt>
 						
 							<dd class="property-value" aria-labelledby="lastUpdated-label"><g:formatDate date="${pricingSetInstance?.lastUpdated}" /></dd>
-						
 					</dl>
 					</g:if>
-				
-					<g:if test="${pricingSetInstance?.productOverrides}">
-					<dl class="dl-horizontal">
-						<dt id="productOverrides-label" class="property-label"><g:message code="pricingSet.productOverrides.label" default="Product Overrides" /></dt>
-						
-							<g:each in="${pricingSetInstance.productOverrides}" var="p">
-							<dd class="property-value" aria-labelledby="productOverrides-label"><g:link controller="productOverride" action="show" id="${p.id}">${p?.encodeAsHTML()}</g:link></dd>
-							</g:each>
-						
-					</dl>
-					</g:if>
-				
 				</ul>
-				<g:form url="[resource:pricingSetInstance, action:'delete']" method="DELETE">
-					<fieldset class="buttons">
-						<g:link class="btn btn-primary" action="edit" resource="${pricingSetInstance}"><g:message code="default.button.edit.label" default="Edit" /></g:link>
-						<g:actionSubmit class="btn btn-danger" action="delete" value="${message(code: 'default.button.delete.label', default: 'Delete')}" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');" />
-					</fieldset>
-				</g:form>
+				<div class="col-md-12">
+					<hr />
+					<p class="property-label"><b>Prices and Overrides:</b></p>
+					<div class="col-md-12">ProductCategory 1</div>
+				</div>
 			</div>
 		</div>
 	</body>

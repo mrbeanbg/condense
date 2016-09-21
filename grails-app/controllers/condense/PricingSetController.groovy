@@ -16,7 +16,7 @@ class PricingSetController {
         respond PricingSet.list(params), model:[pricingSetInstanceCount: PricingSet.count()]
     }
 
-    def show(PricingSet pricingSetInstance) {
+    def manage(PricingSet pricingSetInstance) {
         respond pricingSetInstance
     }
 
@@ -41,7 +41,7 @@ class PricingSetController {
         request.withFormat {
             form multipartForm {
                 flash.message = message(code: 'default.created.message', args: [message(code: 'pricingSet.label', default: 'PricingSet'), pricingSetInstance.id])
-                redirect pricingSetInstance
+                redirect action:"manage", id: pricingSetInstance.id
             }
             '*' { respond pricingSetInstance, [status: CREATED] }
         }
@@ -68,7 +68,7 @@ class PricingSetController {
         request.withFormat {
             form multipartForm {
                 flash.message = message(code: 'default.updated.message', args: [message(code: 'PricingSet.label', default: 'PricingSet'), pricingSetInstance.id])
-                redirect pricingSetInstance
+                redirect action:"manage", id: pricingSetInstance.id
             }
             '*'{ respond pricingSetInstance, [status: OK] }
         }
@@ -87,7 +87,7 @@ class PricingSetController {
 		} catch (DataIntegrityViolationException e) {
 			flash.error = message(code: 'pricingset.in.use.cannot.be.deleted',
 				default: "The Pricing Set is in use and can not be deleted.")
-			redirect action:"show", id: pricingSetInstance.id, method:"GET"
+			redirect action:"index", method:"GET"
 			return
 		}
 
