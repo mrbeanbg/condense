@@ -6,7 +6,6 @@ import grails.transaction.Transactional
 class PricingBookService {
 
     def importPricingBook(Date inEffectFrom, String csvFileContent) {
-		print "asdasd"
 		def newPricingBook = new PricingBook(fromDate: inEffectFrom)//.save()
 		
 		def allCategories = Category.list()
@@ -60,11 +59,6 @@ class PricingBookService {
 		
 		newPricingBook.save flush:true
 		
-		
-		print Category.count()
-		print Subcategory.count()
-		print Region.count()
-		print Product.count()
 		return newPricingBook
     }
 }
