@@ -6,6 +6,7 @@ import condense.SupportTier.TierType;
 
 class ProductOverride {
 	
+	Long includedQuantity
 	Long startQuantity
 	OverrideType overrideType
 	BigDecimal amount
@@ -21,6 +22,7 @@ class ProductOverride {
 	
 
     static constraints = {
+		includedQuantity nullable: true
 		startQuantity blank: false
 		overrideType blank: false
 		amount blank: false
