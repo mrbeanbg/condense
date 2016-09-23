@@ -269,7 +269,7 @@ class PricingSetController {
 				amount: productOverrides.get(i).amount
 				]
 		}
-		//testing conflict resolution1
+
 		return [overridesRepresentation: overridesRepresentation,
 			tierDefinitions: tierDefinitions]
 	}
