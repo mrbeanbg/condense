@@ -189,7 +189,8 @@ class PricingSetController {
 		respond calculatedTiers['overridesRepresentation'], model: [
 			currentProduct: currentProduct,
 			overridesRepresentation: calculatedTiers['overridesRepresentation'],
-			tierDefinitions: calculatedTiers['tierDefinitions'],
+			tierDefinitionsRepresentation: calculatedTiers['tierDefinitionsRepresentation'],
+			expectedPricesRepresentation: calculatedTiers['expectedPricesRepresentation'],
 			showAction: true
 		]
 	}
@@ -230,15 +231,31 @@ class PricingSetController {
 		respondWithTiersCalculated(currentPricingBook, currentPricingSet, currentProduct)
 	}
 	
+	def ajax_delete_tier() {
+		def tier = ProductOverride.where {
+			id == params.tierId
+		}.find()
+		
+		tier.delete flush:true
+		
+		def currentPricingBook = PricingBook.get(params.currentPricingBookId)
+		def currentPricingSet = tier.pricingSet
+		def currentProduct = tier.product
+		
+		respondWithTiersCalculated(currentPricingBook, currentPricingSet, currentProduct)
+	}
+	
 	private respondWithTiersCalculated(PricingBook currentPricingBook,
 		PricingSet currentPricingSet, Product currentProduct) {
 		
 		def calculatedTiers = calculateTiersExpectedPrices(currentPricingBook, currentPricingSet, currentProduct)
 		
+		
 		respond calculatedTiers['overridesRepresentation'], model: [
 			currentProduct: currentProduct,
 			overridesRepresentation: calculatedTiers['overridesRepresentation'],
-			tierDefinitions: calculatedTiers['tierDefinitions'],
+			tierDefinitionsRepresentation: calculatedTiers['tierDefinitionsRepresentation'],
+			expectedPricesRepresentation: calculatedTiers['expectedPricesRepresentation'],
 			showAction: true
 		], view: "_tiers_container"
 	}
@@ -256,12 +273,11 @@ class PricingSetController {
 			product == currentProduct
 		}.list(sort: "startQuantity", order: "asc")
 		
-		print productOverrides
-		
 		def overridesRepresentation = []
 		for (def i=0;i<productOverrides.size();i++) {
 			def currentEndQuantity = (i<productOverrides.size()-1) ? productOverrides.get(i+1).startQuantity : 'Infinity'
 			overridesRepresentation << [
+				id: productOverrides.get(i).id,
 				includedQuantity: productOverrides.get(i).includedQuantity,
 				startQuantity: productOverrides.get(i).startQuantity,
 				endQuantity: currentEndQuantity,
@@ -269,8 +285,93 @@ class PricingSetController {
 				amount: productOverrides.get(i).amount
 				]
 		}
+		
+		def tierDefinitionsRepresentation = []
+		for (def i=0;i<tierDefinitions.size();i++) {
+			def currentEndQuantity = (i<tierDefinitions.size()-1) ? tierDefinitions.get(i+1).startQuantity : 'Infinity'
+			tierDefinitionsRepresentation << [
+				includedQuantity: tierDefinitions.get(i).includedQuantity,
+				startQuantity: tierDefinitions.get(i).startQuantity,
+				endQuantity: currentEndQuantity,
+				price: tierDefinitions.get(i).price
+				]
+		}
+		
+		def expectedPrices = []
+		
+		if (!tierDefinitionsRepresentation.empty) {
+			if (overridesRepresentation.empty) {
+				tierDefinitions.each {
+					expectedPrices << [
+							includedQuantity: it.includedQuantity,
+							startQuantity: it.startQuantity,
+							originalPrice: it.price,
+							adjustment: "${currentPricingSet.defaultOverride} PERCENT",
+							expectedPrice: it.price * (1 + currentPricingSet.defaultOverride/100)
+						]
+				}
+			} else {
+				def newStarts = []
+				newStarts = (overridesRepresentation*.startQuantity + tierDefinitionsRepresentation*.startQuantity).unique()
+				
+				newStarts.each { theNewStart ->
+					def theOverride = overridesRepresentation.find {
+						if (it.endQuantity instanceof String && it.endQuantity == "Infinity") {
+							return it.startQuantity <= theNewStart
+						}
+						return it.startQuantity <= theNewStart && it.endQuantity > theNewStart
+					}
+					
+					def theTier = tierDefinitionsRepresentation.find {
+						if (it.endQuantity == "Infinity") {
+							return it.startQuantity <= theNewStart
+						}
+						return it.startQuantity <= theNewStart && it.endQuantity > theNewStart
+					}
+					
+					def adjustment = ""
+					def expectedPrice = 0
+					if (theOverride.overrideType == ProductOverride.OverrideType.PERCENT) {
+						adjustment = "${theOverride.amount} PERCENT"
+						expectedPrice = theTier.price * (1 + theOverride.amount/100)
+					} else if (theOverride.overrideType == ProductOverride.OverrideType.DELTA) {
+						adjustment = "${theOverride.amount} DELTA"
+						expectedPrice = theTier.price + theOverride.amount
+					} else {
+						adjustment = "${theOverride.amount} FIXED"
+						expectedPrice = theOverride.amount
+					}
+					
+					expectedPrices << [
+						includedQuantity: theOverride.includedQuantity,
+						startQuantity: theNewStart,
+						originalPrice: theTier.price,
+						adjustment: adjustment,
+						expectedPrice: expectedPrice
+					]
+				}
+			}
+		}
+		
+		def expectedPricesRepresentation = []
+		
+		for (def i=0;i<expectedPrices.size();i++) {
+			def currentEndQuantity = (i<expectedPrices.size()-1) ? expectedPrices.get(i+1).startQuantity : 'Infinity'
+			expectedPricesRepresentation << [
+				includedQuantity: expectedPrices.get(i).includedQuantity,
+				startQuantity: expectedPrices.get(i).startQuantity,
+				endQuantity: currentEndQuantity,
+				originalPrice: expectedPrices.get(i).originalPrice,
+				adjustment: expectedPrices.get(i).adjustment,
+				expectedPrice: expectedPrices.get(i).expectedPrice
+				]
+		}
+		print expectedPricesRepresentation
 
-		return [overridesRepresentation: overridesRepresentation,
-			tierDefinitions: tierDefinitions]
+		return [
+			overridesRepresentation: overridesRepresentation,
+			tierDefinitionsRepresentation: tierDefinitionsRepresentation,
+			expectedPricesRepresentation: expectedPricesRepresentation
+		]
 	}
 }

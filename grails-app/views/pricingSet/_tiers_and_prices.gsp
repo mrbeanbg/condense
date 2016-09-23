@@ -37,13 +37,15 @@
 			<thead>
 				<th><g:message code="included.quantity.label" default="Included Quantity"/></th>
 				<th><g:message code="start.quantity.label" default="Start Quantity"/></th>
+				<th><g:message code="end.quantity.label" default="End Quantity"/></th>
 				<th><g:message code="price.label" default="Price (USD)"/></th>
 			</thead>
 			<tbody>
-				<g:each in="${tierDefinitions}" var="t">
+				<g:each in="${tierDefinitionsRepresentation}" var="t">
 					<tr>
 						<td>${t.includedQuantity}</td>
 						<td>${t.startQuantity}</td>
+						<td>${t.endQuantity}</td>
 						<td>${t.price}</td>
 					</tr>
 				</g:each>
