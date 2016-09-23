@@ -3,6 +3,7 @@ package condense
 
 
 import static org.springframework.http.HttpStatus.*
+import grails.converters.JSON
 import grails.transaction.Transactional
 import org.springframework.dao.DataIntegrityViolationException
 
@@ -146,17 +147,130 @@ class PricingSetController {
 		def currentCategory = Category.get(params.currentCategoryId)
 		def currentSubCategory = Subcategory.get(params.currentSubCategoryId)
 		
+		if (currentPricingBook == null || currentCategory == null) {
+			render status:400
+			return
+		}
+		
+		if (params.currentSubCategoryId != null && params.currentSubCategoryId != ""
+			&& currentSubCategory == null) {
+			render status:400
+			return
+		}
+		
 		def matchingTiers = TierDefinition.where {
 			pricingBook == currentPricingBook
 			product.category == currentCategory
 			if (currentSubCategory) {
 				product.subcategory == currentSubCategory
 			}
-			order "id"
+			order "product.id", "asc"
 		}.list()
 		
-		respond matchingTiers, model: [
-				matchingTiers: matchingTiers
+		def matchingProducts = matchingTiers*.product.unique()
+		
+		respond matchingProducts, model: [
+				matchingProducts: matchingProducts
 			]
+	}
+	
+	def ajax_get_tiers() {
+		def currentPricingSet = PricingSet.get(params.currentPricingSetId)
+		def currentPricingBook = PricingBook.get(params.currentPricingBookId)
+		def currentProduct = Product.get(params.currentProductId)
+		
+		if (currentPricingSet == null || currentPricingBook == null || currentProduct == null) {
+			render status:400
+			return
+		}
+		
+		def calculatedTiers = calculateTiersExpectedPrices(currentPricingBook, currentPricingSet, currentProduct)
+		
+		respond calculatedTiers['overridesRepresentation'], model: [
+			currentProduct: currentProduct,
+			overridesRepresentation: calculatedTiers['overridesRepresentation'],
+			tierDefinitions: calculatedTiers['tierDefinitions'],
+			showAction: true
+		]
+	}
+	
+	def ajax_add_tier() {
+		def currentPricingBook = PricingBook.get(params.currentPricingBookId)
+		def currentPricingSet = PricingSet.get(params.currentPricingSetId)
+		def currentProduct = Product.get(params.currentProductId)
+		
+		def existingProductOverride = ProductOverride.where {
+			startQuantity == params.startQuantity
+			product == currentProduct
+			pricingSet == currentPricingSet
+		}.list()
+		
+		if (existingProductOverride != null && !existingProductOverride.empty) {
+			render text: '{"error": "Tier with the same Start Quantity is already defined"}', status: 400
+			return
+		}
+		
+		def productOverride = new ProductOverride(
+				includedQuantity: params.includedQuantity,
+				startQuantity: params.startQuantity,
+				overrideType: ProductOverride.OverrideType.valueOfName(params.overrideType),
+				amount: params.amount,
+				pricingSet: currentPricingSet,
+				product: currentProduct
+			)
+		
+		if (!productOverride.validate()) {
+			productOverride.discard()
+			render text: productOverride as JSON, status: 400
+			return
+		}
+		
+		productOverride.save flush: true
+		
+		respondWithTiersCalculated(currentPricingBook, currentPricingSet, currentProduct)
+	}
+	
+	private respondWithTiersCalculated(PricingBook currentPricingBook,
+		PricingSet currentPricingSet, Product currentProduct) {
+		
+		def calculatedTiers = calculateTiersExpectedPrices(currentPricingBook, currentPricingSet, currentProduct)
+		
+		respond calculatedTiers['overridesRepresentation'], model: [
+			currentProduct: currentProduct,
+			overridesRepresentation: calculatedTiers['overridesRepresentation'],
+			tierDefinitions: calculatedTiers['tierDefinitions'],
+			showAction: true
+		], view: "_tiers_container"
+	}
+	
+	private calculateTiersExpectedPrices(PricingBook currentPricingBook,
+		PricingSet currentPricingSet, Product currentProduct) {
+		
+		def tierDefinitions = TierDefinition.where {
+			pricingBook == currentPricingBook
+			product == currentProduct
+		}.list(sort: "startQuantity", order: "asc")
+		
+		def productOverrides = ProductOverride.where {
+			pricingSet == currentPricingSet
+			product == currentProduct
+		}.list(sort: "startQuantity", order: "asc")
+		
+		print productOverrides
+		
+		def overridesRepresentation = []
+		for (def i=0;i<productOverrides.size();i++) {
+			def currentEndQuantity = (i<productOverrides.size()-1) ? productOverrides.get(i+1).startQuantity : 'Infinity'
+			overridesRepresentation << [
+				includedQuantity: productOverrides.get(i).includedQuantity,
+				startQuantity: productOverrides.get(i).startQuantity,
+				endQuantity: currentEndQuantity,
+				overrideType: productOverrides.get(i).overrideType,
+				amount: productOverrides.get(i).amount
+				]
+		}
+		
+		return [overridesRepresentation: overridesRepresentation,
+			tierDefinitions: tierDefinitions]
 	}
 }

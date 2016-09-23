@@ -1,1 +1,0 @@
-									The products/prices should be rendered here

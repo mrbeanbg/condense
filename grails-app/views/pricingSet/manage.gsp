@@ -24,6 +24,7 @@
 				<g:if test="${flash.error}">
 				<div class="alert alert-danger" role="status">${flash.error}</div>
 				</g:if>
+				<input type="hidden" id="pricingSetInstanceId" value="${pricingSetInstance.id}">
 				<ul class="property-list pricingSet">
 				
 					<g:if test="${pricingSetInstance?.name}">
@@ -110,13 +111,20 @@
 
 <asset:script>
 $(document).ready(function(){
+	var currentPricingSetId = $("#pricingSetInstanceId").val();
+	
 	var currentCatIndex = null;
 	var currentCategoryId = null;
 	var currentSubCategoryId = null;
 	var currentPricingBookId = null;
 	
+	
+	var currentProductId = null;
+	
 	$(".manage-products").unbind().click(function () {
 		$('[id^=products-]').html("");
+		currentProductId = null;
+		
 		currentCatIndex = $(this).data("catindex");
 		currentCategoryId = $(this).data("categoryid");
 		currentSubCategoryId = $(this).data("subcategoryid");
@@ -130,13 +138,29 @@ $(document).ready(function(){
 		ajaxGetProducts();
 		return false;
 	});
+	
 	$("#currentPricingBook").unbind().change(function () {
+		currentProductId == null;
 		currentPricingBookId = $("#currentPricingBook").val().trim();
 		
 		if (currentCatIndex != null && currentCategoryId != null) {
 			ajaxGetProducts();
 		}
 	});
+	
+	function bindManageTiersButton() {
+		$(".manage-tiers").unbind().click(function () {
+			currentProductId = $(this).data("productid");
+			
+			$('[id^=tiers-for-pid]').html("");
+			
+			if (currentProductId != null) {
+				ajaxGetTiers();
+			}
+			
+			return false;
+		});
+	}
 	
 	function ajaxGetProducts() {
 		jQuery.ajax({
@@ -150,6 +174,28 @@ $(document).ready(function(){
 			success: function(data,textStatus) {
 					//jQuery('.manage-products').attr("disabled", true);
 				 	jQuery('#products-' + currentCatIndex).html(data);
+				 	bindManageTiersButton();
+				 	
+				 	if (currentProductId != null && currentProductId != null && $("#tiers-for-pid" + currentProductId) != null) {
+				 		ajaxGetTiers();
+				 	}
+			},
+			error: function(XMLHttpRequest,textStatus,errorThrown){
+			}
+		});
+	}
+	
+	function ajaxGetTiers() {
+		jQuery.ajax({
+			type: 'GET',
+			url: '<g:createLink action="ajax_get_tiers" />',
+			data: {
+				'currentPricingSetId': currentPricingSetId,
+				'currentPricingBookId': currentPricingBookId,
+				'currentProductId': currentProductId,
+			},
+			success: function(data,textStatus) {
+				 	jQuery('#tiers-for-pid' + currentProductId).html(data);
 			},
 			error: function(XMLHttpRequest,textStatus,errorThrown){
 			}
