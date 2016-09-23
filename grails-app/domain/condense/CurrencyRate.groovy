@@ -13,7 +13,7 @@ class CurrencyRate {
 
     static constraints = {
 		currency blank: false, unique: true
-		rate blank: false
+		rate blank: false, size: 30, scale: 15
     }
 	
 	public String toString() {
