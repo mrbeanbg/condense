@@ -2,7 +2,9 @@ package condense
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.text.DateFormat;
 import java.text.DecimalFormat
+import java.text.SimpleDateFormat
 
 import grails.converters.JSON
 
@@ -29,9 +31,6 @@ class UsageCollectorJob {
 			def startTimeStr = startTime.format("yyyy-MM-dd", TimeZone.getTimeZone("GMT")) + " 00:00:00Z"
 			def endTimeStr = endTime.format("yyyy-MM-dd", TimeZone.getTimeZone("GMT")) + " 00:00:00Z"
 			
-			print startTimeStr
-			print endTimeStr
-			
 			def usages = null
 			try {
 				usages = cspService.getUsage(currentSubscription.subscriptionId, startTimeStr, endTimeStr)
@@ -39,39 +38,26 @@ class UsageCollectorJob {
 				log.error("Unable to obtain usage for ${currentSubscription.subscriptionId}", ex)
 			}
 			
-			print usages as JSON
-			
-			UsageRecord.withTransaction { status ->
-				for (usage in usages) {
-					//					Date startTime
-					//					Date endTime
-					//					BigDecimal quantity
-					//					String unit
-					//					String meteredId
-					//					String category
-					//					String subcategory
-					//					String name
-					//					String region
-					def usageRecord = new UsageRecord(meteredId: usage['meter_id'],
-						startTime: usage['usage_start_time'],
-						endTime: usage['usage_end_time'],
-						quantity: new BigDecimal(new DecimalFormat("0.######E0").format(usage['quantity'])),
-						unit: usage['unit'],
-						category: usage['meter_category'],
-						region: usage['meter_region'],
-						name: usage['meter_name']
-						)
-					if (usage.containsKey("category")) {
-						usageRecord.category = usage['category']
-					}
-					usageRecord.subscription = currentSubscription
-					
-					
-					currentSubscription.addToUsageRecords(usageRecord)
-					currentSubscription.usageObtainedUntil = endTime
-					currentSubscription.save()
-				}
+			for (usage in usages) {
+				DateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+				def recordStartTime = format.parse(usage['usage_start_time'])
+				def recordEndTime = format.parse(usage['usage_end_time'])
+				
+				new UsageRecord(
+					meteredId: usage['meter_id'],
+					startTime: recordStartTime,
+					endTime: recordEndTime,
+					quantity: new BigDecimal(new DecimalFormat("0.######E0").format(usage['quantity'])),
+					unit: usage['unit'],
+					category: usage['meter_category'],
+					subcategory: (usage.containsKey("meter_sub_category") ? usage['meter_sub_category'] : null),
+					region: usage['meter_region'],
+					name: usage['meter_name'],
+					subscription: currentSubscription).save(flush: true)
 			}
+			
+			currentSubscription.usageObtainedUntil = endTime
+			currentSubscription.save flush: true
 		}
     }
 }
