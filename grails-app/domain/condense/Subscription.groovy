@@ -5,6 +5,7 @@ import java.util.Date;
 class Subscription {
 	
 	String subscriptionId
+	Date usageObtainedUntil
 
 	/* Automatic timestamping of GORM */
 	Date dateCreated
@@ -12,10 +13,11 @@ class Subscription {
 	
 	static belongsTo = [customer: Customer]
 	
-	static hasMany = [usageRecors: UsageRecord]
+	static hasMany = [usageRecords: UsageRecord]
 	
     static constraints = {
 		subscriptionId blank:false, unique:true
+		usageObtainedUntil nullable: true
     }
 	
 	public String toString() {

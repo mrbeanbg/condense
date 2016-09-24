@@ -78,5 +78,9 @@ grails.project.dependency.resolution = {
 		runtime ":twitter-bootstrap:3.3.1"
 		
 		compile "org.grails.plugins:csv:0.3.1"
+		
+		compile "org.grails.plugins:rest-client-builder:2.1.1"
+		
+		compile "org.grails.plugins:quartz:1.0.2"
     }
 }

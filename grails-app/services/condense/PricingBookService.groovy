@@ -14,6 +14,7 @@ class PricingBookService {
 		def allProducts = Product.list()
 		print allProducts
 		def firstRowSkipped = false;
+		
 		csvFileContent.eachCsvLine { tokens ->
 			if (firstRowSkipped) {
 				def newCategory = new Category(name: tokens[1])

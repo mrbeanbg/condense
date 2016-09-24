@@ -5,6 +5,7 @@ import java.text.SimpleDateFormat
 class ProbaController {
 	PricingBookService pricingBookService
 	BillingService billingService
+	CspService cspService
 
 	def index() {
 //		def dateFormat = new SimpleDateFormat("yyyy-MM-dd")
@@ -97,5 +98,15 @@ class ProbaController {
 		billingService.getEffectivePrice(pricingBook, pricingSet, productGuid, 50)
 		billingService.getEffectivePrice(pricingBook, pricingSet, productGuid, 550)
 		billingService.getEffectivePrice(pricingBook, pricingSet, productGuid, 7000)
+	}
+	
+	def get_usage() {
+		def subscriptions = Subscription.list()
+		def usages = [:]
+		for (def i=0; i<subscriptions.size(); i++) {
+			usages << ["${subscriptions.get(i).subscriptionId}": cspService.getUsage(subscriptions.get(i).subscriptionId, "2016-09-23 00:00:00Z", "2016-09-24 00:00:00Z")]
+		}
+		
+		render usages
 	}
 }
