@@ -59,7 +59,9 @@ class ProbaController {
 		def customerSubscription = foundCustomer.subscriptions[0]
 		//print "BEFORE SEARCH ${customerSubscription}"
 		UsageRecord.where { id > new Long(-1) }.deleteAll()
-		def usageDate = dateFormat.parse("2016-05-02")
+		
+		def dateFormatUsage = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
+		def usageDate = dateFormat.parse("2016-05-02T00:00:00+00:00")
 		new UsageRecord(startTime: usageDate, endTime: usageDate + 1, subscription: customerSubscription, quantity: 1, meteredId: "product A").save()
 		new UsageRecord(startTime: usageDate, endTime: usageDate + 1, subscription: customerSubscription, quantity: 2, meteredId: "product A").save()
 		new UsageRecord(startTime: usageDate, endTime: usageDate + 1, subscription: customerSubscription, quantity: 5, meteredId: "product B").save()
