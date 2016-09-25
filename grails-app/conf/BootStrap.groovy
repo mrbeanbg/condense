@@ -6,6 +6,9 @@ class BootStrap {
 	PricingBookService pricingBookService
 
     def init = { servletContext ->
+		TimeZone.setDefault(TimeZone.getTimeZone("UTC"))
+		System.setProperty("user.timezone", "UTC")
+		
 		new Category(name: "Cloud Services").save()
 		new Subcategory(name: "API Management").save()
 		new Region(name: "AU East").save()
