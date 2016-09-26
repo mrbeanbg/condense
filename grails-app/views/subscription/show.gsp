@@ -4,7 +4,7 @@
 <html>
 	<head>
 		<meta name="layout" content="main">
-		<g:set var="entityName" value="${message(code: 'subscription.label', default: 'Subscription')}" />
+		<g:set var="entityName" value="${message(code: 'usages.for.subscription.label', default: 'Usges for Subscription')}" />
 		<title><g:message code="default.show.label" args="[entityName]" /></title>
 	</head>
 	<body>
@@ -54,23 +54,6 @@
 					</dl>
 					</g:if>
 				
-					<g:if test="${subscriptionInstance?.dateCreated}">
-					<dl class="dl-horizontal">
-						<dt id="dateCreated-label" class="property-label"><g:message code="subscription.dateCreated.label" default="Date Created" /></dt>
-						
-							<dd class="property-value" aria-labelledby="dateCreated-label"><g:formatDate date="${subscriptionInstance?.dateCreated}" /></dd>
-						
-					</dl>
-					</g:if>
-				
-					<g:if test="${subscriptionInstance?.lastUpdated}">
-					<dl class="dl-horizontal">
-						<dt id="lastUpdated-label" class="property-label"><g:message code="subscription.lastUpdated.label" default="Last Updated" /></dt>
-						
-							<dd class="property-value" aria-labelledby="lastUpdated-label"><g:formatDate date="${subscriptionInstance?.lastUpdated}" /></dd>
-						
-					</dl>
-					</g:if>
 				</ul>
 				
 				<hr/>

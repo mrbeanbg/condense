@@ -16,7 +16,7 @@ class UsageCollectorJob {
 	def concurrent = false
 	
     static triggers = {
-		cron name: 'myTrigger', cronExpression: "0 0 3 * * ?", timeZone:TimeZone.getTimeZone("UTC")
+		cron name: 'usagesJobTrigger', cronExpression: "0 0 3 * * ?", timeZone:TimeZone.getTimeZone("UTC")
     }
 
     def execute() {

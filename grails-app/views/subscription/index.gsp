@@ -4,7 +4,7 @@
 <html>
 	<head>
 		<meta name="layout" content="main">
-		<g:set var="entityName" value="${message(code: 'subscription.label', default: 'Subscription')}" />
+		<g:set var="entityName" value="${message(code: 'subscription.label', default: 'Subscriptions and Usages')}" />
 		<title><g:message code="default.list.label" args="[entityName]" /></title>
 	</head>
 	<body>
@@ -30,10 +30,6 @@
 							<g:sortableColumn property="subscriptionId" title="${message(code: 'subscription.subscriptionId.label', default: 'Subscription Id')}" />
 						
 							<g:sortableColumn property="usageObtainedUntil" title="${message(code: 'subscription.usageObtainedUntil.label', default: 'Usage Obtained Until')}" />
-						
-							<g:sortableColumn property="dateCreated" title="${message(code: 'subscription.dateCreated.label', default: 'Date Created')}" />
-						
-							<g:sortableColumn property="lastUpdated" title="${message(code: 'subscription.lastUpdated.label', default: 'Last Updated')}" />
 							
 							<th><g:message code="actions.lable" default="Actions"/></th>
 						
@@ -59,10 +55,6 @@
 									<g:formatDate date="${subscriptionInstance.usageObtainedUntil}" type="date" style="LONG" />
 								</g:else>
 							</td>
-						
-							<td><g:formatDate date="${subscriptionInstance.dateCreated}" /></td>
-						
-							<td><g:formatDate date="${subscriptionInstance.lastUpdated}" /></td>
 							
 							<td>
 								<g:if test="${subscriptionInstance.usageObtainedUntil == null}">

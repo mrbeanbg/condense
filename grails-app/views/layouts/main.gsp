@@ -33,7 +33,6 @@
 									<g:message code="topnav.customer.management" default="Customer Management"/><span class="caret"></span></a>
 								<ul class="dropdown-menu" role="menu">
 									<li><g:link controller="customer" action="index"><g:message code="topnav.Customers" default="Customers"/></g:link></li>
-									<li><g:link controller="subscription" action="index"><g:message code="topnav.Usages" default="Usages"/></g:link></li>
 								</ul>
 							</li>
 							<li class="dropdown">
@@ -44,6 +43,13 @@
 									<li><g:link controller="pricingSet" action="index"><g:message code="topnav.pricing.Set" default="Pricing Sets"/></g:link></li>
 									<li><g:link controller="supportPlan" action="index"><g:message code="topnav.support.Plans" default="Support Plans"/></g:link></li>
 									<li><g:link controller="currencyRate" action="index"><g:message code="topnav.currency.Rates" default="Currency Rates"/></g:link></li>
+								</ul>
+							</li>
+							<li class="dropdown">
+								<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+									<g:message code="topnav.billing.usages.and.transactions" default="Usages and Billing Transacions"/><span class="caret"></span></a>
+								<ul class="dropdown-menu" role="menu">
+									<li><g:link controller="subscription" action="index"><g:message code="topnav.Usages" default="Subscriptions and Usages"/></g:link></li>
 								</ul>
 							</li>
 						</ul>
