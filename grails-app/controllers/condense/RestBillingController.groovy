@@ -35,7 +35,19 @@ class RestBillingController {
 		}
 
 		def billingPeriodDays = params.billingPeriodDays?.toInteger()
-		def	subscriptionTransactions = billingService.getSubscriptionTransactions(subscription, fromDate, toDate, billingPeriodDays)
+		def simpleBillingPolicy = !!(params.simpleBillingPolicy?.toInteger())
+		def currencyName = params.currency?.toUpperCase()
+		def currencyRate
+		if (currencyName!= null && currencyName != "USD") {
+			currencyRate = CurrencyRate.find() {currency == currencyName}
+			if (currencyRate == null) {
+				render status: 400, text: "Invalid or unsupport currency provided."
+				return
+			}
+		}
+		
+		def	subscriptionTransactions = billingService.getSubscriptionTransactions(
+			subscription, fromDate, toDate, billingPeriodDays, simpleBillingPolicy, currencyRate)
 		render subscriptionTransactions as JSON
 	}
 }

@@ -19,9 +19,9 @@ class BillingService {
 	 * 
 	 * @return boolean
 	 */
-	def isSimpleBillingPolicy() {
-		return !!(isSimpleBillingPolicy)
-	}
+//	def isSimpleBillingPolicy() {
+//		return !!(isSimpleBillingPolicy)
+//	}
 	
 	def checkBillingPeriodDates(Date fromDate, Date toDate, Integer billingPeriodDays = null) {
 		if (fromDate >= toDate) {
@@ -231,7 +231,7 @@ class BillingService {
 	 * 
 	 * @return list of billing periods with relevant effective pricing books 
 	 */
-	def getBillingEffectivePeriods(Date fromDate, Date toDate, Integer billingPeriodDays = null, Integer billingDay = null) {
+	def getBillingEffectivePeriods(Date fromDate, Date toDate, Integer billingPeriodDays = null, Boolean isSimpleBillingPolicy = false) {
 		def effectivePricingBooks = getEffectivePricingBooks(fromDate, toDate)
 		if (effectivePricingBooks.size() == 0) {
 			throw new Exception("No valid effecive pricing book found")
@@ -239,7 +239,7 @@ class BillingService {
 		def billingEffectivePeriods = []
 		
 		def billingPeriods = getBillingPeriods(fromDate, toDate, billingPeriodDays)
-		if (isSimpleBillingPolicy()) {
+		if (isSimpleBillingPolicy) {
 			return getSimpleEffectivePeriods(billingPeriods, effectivePricingBooks)
 		}
 		
@@ -316,7 +316,8 @@ class BillingService {
 		return transactions
 	}
 	
-	def getSubscriptionTransactions(Subscription subscription, Date fromDate, Date toDate, Integer billingPeriodDays = null) {
+	def getSubscriptionTransactions(Subscription subscription, Date fromDate, Date toDate, 
+		Integer billingPeriodDays = null, Boolean isSimpleBillingPolicy = false, CurrencyRate currencyRate) {
 		checkBillingPeriodDates(fromDate, toDate, billingPeriodDays)
 		print "===== getSubscriptionUsage ${subscription}"
 		//assumed that the records are collected daily
@@ -337,18 +338,30 @@ class BillingService {
 			def pricingSet = subscription.customer.pricingSet
 			
 			def billingPeriods = getBillingPeriods(fromDate, toDate, billingPeriodDays)
-			def effectivePeriods = getBillingEffectivePeriods(fromDate, toDate, billingPeriodDays)
+			def effectivePeriods = getBillingEffectivePeriods(fromDate, toDate, billingPeriodDays, isSimpleBillingPolicy)
 			
 			allUsages.each {
 				if (it.totalUsage > 0) {
 					def productGuid = it.guid
+					
 					def product = Product.find {guid == productGuid}
 					if (product == null) {
 						throw new Exception("Cannot find product ${productGuid}")
 					}
+					
+					def productName = product.name
+					def category = product.category.name
+					def subcategory = product.subcategory?.name
+					def region = product.region.name
+					
 					def productDetails = getProductTransactions(pricingSet,
 						product, billingPeriods, effectivePeriods, billingPeriodDays)
-					subscriptionDetails << ["productGuid": productGuid, "details" : productDetails]
+					subscriptionDetails << ["productGuid": productGuid, 
+											"name": productName, 
+											"category": category,
+											"subcategory": subcategory,
+											"region": region,
+											"details" : productDetails]
 				}
 			}
 		}
