@@ -43,6 +43,7 @@
 									<li><g:link controller="pricingBook" action="index"><g:message code="topnav.pricing.Books" default="Pricing Books"/></g:link></li>
 									<li><g:link controller="pricingSet" action="index"><g:message code="topnav.pricing.Set" default="Pricing Sets"/></g:link></li>
 									<li><g:link controller="supportPlan" action="index"><g:message code="topnav.support.Plans" default="Support Plans"/></g:link></li>
+									<li><g:link controller="currencyRate" action="index"><g:message code="topnav.currency.Rates" default="Currency Rates"/></g:link></li>
 								</ul>
 							</li>
 						</ul>
