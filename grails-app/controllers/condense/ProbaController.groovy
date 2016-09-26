@@ -26,13 +26,15 @@ class ProbaController {
 		
 		def dateFormatUsage = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
 		dateFormatUsage.setTimeZone(TimeZone.getTimeZone("GMT"))
-		def usageDate = dateFormat.parse("2016-05-02T00:00:00+00:00")
-		new UsageRecord(startTime: usageDate, endTime: usageDate + 1, subscription: customerSubscription, quantity: 1, meteredId: "0d1aa0ed-0a5d-4e42-ab7c-a12f55699b33").save()
-		new UsageRecord(startTime: usageDate, endTime: usageDate + 1, subscription: customerSubscription, quantity: 2, meteredId: "0d1aa0ed-0a5d-4e42-ab7c-a12f55699b33").save()
-		new UsageRecord(startTime: usageDate, endTime: usageDate + 1, subscription: customerSubscription, quantity: 5, meteredId: "cce2c24b-69a1-44cc-9f8a-963aa0c8f648").save()
-		new UsageRecord(startTime: usageDate, endTime: usageDate + 1, subscription: foundCustomer.subscriptions[1], metredId: "cce2c24b-69a1-44cc-9f8a-963aa0c8f648", quantity: 4).save()
+		def usageDate = dateFormatUsage.parse("2016-05-02T00:00:00+0000")
+		new UsageRecord(startTime: usageDate, endTime: usageDate + 1, subscription: customerSubscription, quantity: 1, meteredId: "f2dee52c-2ead-4685-b743-d2cac3073ded").save()
+		new UsageRecord(startTime: usageDate, endTime: usageDate + 1, subscription: customerSubscription, quantity: 2, meteredId: "f2dee52c-2ead-4685-b743-d2cac3073ded").save()
+		new UsageRecord(startTime: usageDate, endTime: usageDate + 1, subscription: customerSubscription, quantity: 5, meteredId: "e0d5dad9-c5ce-433d-bea3-2b4c699c3d5e").save()
+		new UsageRecord(startTime: usageDate, endTime: usageDate + 1, subscription: foundCustomer.subscriptions[1], meteredId: "e0d5dad9-c5ce-433d-bea3-2b4c699c3d5e", quantity: 4).save()
 		
-		billingService.getCustomerTransactions(foundCustomer, dateFormat.parse("2016-05-02"), dateFormat.parse("2016-05-16"))
+		def dateFormat = new SimpleDateFormat("yyyy-MM-dd")
+		dateFormat.setTimeZone(TimeZone.getTimeZone("GMT"))
+		print billingService.getCustomerTransactions(foundCustomer, dateFormat.parse("2016-05-02"), dateFormat.parse("2016-05-16"))
 	}
 	
 	def geteffectivePricingPeriods() {

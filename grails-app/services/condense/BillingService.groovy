@@ -68,6 +68,9 @@ class BillingService {
     def getEffectivePrice(PricingBook currentPricingBook, PricingSet pricingSet, String productGuid, BigDecimal quantity) {
 		//print "Quantity: ${quantity}"
 		def originalTier = getOriginalTier(currentPricingBook, productGuid, quantity)
+		if (originalTier == null) {
+			throw new Exception("There is no tier defined for ${quantity} units of product ${productGuid} in pricing book ${currentPricingBook}")
+		}
 		def price = originalTier.price
 		//print "Original price: ${price}"
 		def override = getEffectiveOverride(pricingSet, productGuid, quantity)
@@ -248,25 +251,17 @@ class BillingService {
 		return calendar.getActualMaximum(Calendar.DATE);		
 	}
 	
-	def getProductUsage(Product product, Date fromDate, Date toDate) {
-		if (billingPeriodDays == null) {
-			billingPeriodDays = getDaysInMonth(fromDate)
-		}
-		
-		assert (toDate - fromDate).days <= billingPeriodDays
-		
-		def totalUsage = UsageRecord.createCriteria().get {
+	def getProductUsage(Product product, Date fromDate, Date toDate) {		
+		def allUsages = UsageRecord.createCriteria().list {
 			and {
 				eq ("meteredId", product.guid)
 				ge ("startTime", fromDate)
 				lt ("startTime", toDate)
 			}
-			resultTransformer(CriteriaSpecification.ALIAS_TO_ENTITY_MAP)
-			projections {
-				sum("quantity", "totalUsage")
-			}
-		}.quantity
-		return usage
+		}
+		def totalUsage = allUsages*.quantity.sum()
+		print "========Total usage: ${totalUsage}"
+		return totalUsage == null ? 0 : totalUsage
 	}
 	
 	def getProductTransactions(PricingSet pricingSet, Product product, List billingPeriods, List effectivePeriods, Integer billingPeriodDays = null) {
@@ -277,7 +272,10 @@ class BillingService {
 		billingPeriods.each {
 			def billingPeriodFromDate = it.fromDate
 			def billingPeriodToDate = it.toDate
-			def billingDays = (billingPeriodToDate - billingPeriodFromDate).days
+			def billingDays 
+			use(groovy.time.TimeCategory) {
+				billingDays = (billingPeriodToDate - billingPeriodFromDate).days
+			}
 			
 			def billingEffectivePeriods = effectivePeriods.findAll { 
 				it.fromDate >= billingPeriodFromDate && it.toDate <= billingPeriodToDate}
@@ -287,31 +285,35 @@ class BillingService {
 			def totalUsage = 0
 			billingEffectivePeriods.each {
 				def usage = getProductUsage(product, it.fromDate, it.toDate)
-				if (usage > 0) {
-					//save just effective periods with usage
-					def effectivePrice = geteffectivePrice(it.pricingBook, pricingSet, product.guid, usage)
 					
-					def effectiveDays = (it.fromDate - it.toDate).days
-					
-					def includedForPeriod = (effectivePrice.includedQuantity *effectiveDays * 1.0) / billingDays
-					
-					//For better precision
-					def includedAmountForPeriod = (effectivePrice.includedQuantity * effectivePrice.price * effectiveDays * 1.0) / billingDays
-					
-					effectivePeriodsDetails << ["fromDate": it.fromDate, "toDate": it.toDate, 
-												"usage": usage, "price": effectivePrice.price, 
-												"included": effectivePrice.includedQuantity, "includedForPeriod": includedForPeriod]
-					subTotal += usage*effectivePrice.price - includedAmountForPeriod
-					totalUsage += usage
+				def effectivePrice = getEffectivePrice(it.pricingBook, pricingSet, product.guid, usage)
+				
+				def effectiveFromDate = it.fromDate
+				def effectiveToDate = it.toDate
+				def effectiveDays
+				use(groovy.time.TimeCategory) {
+					effectiveDays = (effectiveToDate - effectiveFromDate).days
 				}
+				
+				def includedForPeriod = (effectivePrice.includedQuantity *effectiveDays * 1.0) / billingDays
+				
+				//For better precision
+				def includedAmountForPeriod = (effectivePrice.includedQuantity * effectivePrice.price * effectiveDays * 1.0) / billingDays
+				
+				effectivePeriodsDetails << ["fromDate": it.fromDate, "toDate": it.toDate, 
+											"usage": usage, "price": effectivePrice.price, 
+											"included": effectivePrice.includedQuantity, "includedForPeriod": includedForPeriod]
+				subTotal += usage*effectivePrice.price - includedAmountForPeriod
+				totalUsage += usage
+				
 			}
 			transactions << ["effectivePeriods": effectivePeriodsDetails,
-							 "fromDate": billingFromDate,
+							 "fromDate": billingPeriodFromDate,
 							 "toDate": billingPeriodToDate,
 							 "subTotal": subTotal,
 							 "totalUsage": totalUsage]
 		}
-		
+		return transactions
 	}
 	
 	def getSubscriptionTransactions(Subscription subscription, Date fromDate, Date toDate, Integer billingPeriodDays = null) {
@@ -341,9 +343,12 @@ class BillingService {
 				if (it.totalUsage > 0) {
 					def productGuid = it.guid
 					def product = Product.find {guid == productGuid}
+					if (product == null) {
+						throw new Exception("Cannot find product ${productGuid}")
+					}
 					def productDetails = getProductTransactions(pricingSet,
 						product, billingPeriods, effectivePeriods, billingPeriodDays)
-					subscriptionDetails << ["guid": productGuid, "details" : productDetails]
+					subscriptionDetails << ["productGuid": productGuid, "details" : productDetails]
 				}
 			}
 		}
@@ -365,7 +370,7 @@ class BillingService {
 		checkBillingPeriodDates(fromDate, toDate, billingPeriodDays)
 		def subscriptionDetails = []
 		customer.subscriptions.each{
-			subscriptionDetails << ["subscription": it.subscriptionId, "details": getSubscriptionTransactions(it, fromDate, toDate, billingPeriodDays, billingDay)]
+			subscriptionDetails << ["subscription": it.subscriptionId, "details": getSubscriptionTransactions(it, fromDate, toDate, billingPeriodDays)]
 		}
 		// TODO: return also the grand total and any other requested summary
 		return ["subscriptions": subscriptionDetails]
