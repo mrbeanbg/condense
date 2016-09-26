@@ -132,7 +132,7 @@ class BillingService {
 		if (billingPeriodDays == null) {
 			nextBillingDate = fromDate + getDaysInMonth(fromDate)
 		} else {
-			nextBillingDate += billingPeriodDays
+			nextBillingDate = fromDate + billingPeriodDays
 		}
 		
 		def nextFromDate = fromDate
@@ -179,7 +179,7 @@ class BillingService {
 			}
 		}
 		
-		//Assign the last pricing book to the last billing period
+		//Assign the last pricing book to the remaining billing periods
 		while (currentPeriodIndex < billingPeriods.size()) {
 			currentPeriod = billingPeriods[currentPeriodIndex]
 			effectivePeriods << ["fromDate": currentPeriod.fromDate, "toDate": currentPeriod.toDate, "pricingBook": effectivePricingBooks[i]]
@@ -287,21 +287,23 @@ class BillingService {
 			def totalUsage = 0
 			billingEffectivePeriods.each {
 				def usage = getProductUsage(product, it.fromDate, it.toDate)
-				
-				def effectivePrice = geteffectivePrice(it.pricingBook, pricingSet, product.guid, usage)
-				
-				def effectiveDays = (it.fromDate - it.toDate).days
-				
-				def includedForPeriod = (effectivePrice.includedQuantity *effectiveDays * 1.0) / billingDays
-				
-				//For better precision
-				def includedAmountForPeriod = (effectivePrice.includedQuantity * effectivePrice.price * effectiveDays * 1.0) / billingDays
-				
-				effectivePeriodsDetails << ["fromDate": it.fromDate, "toDate": it.toDate, 
-											"usage": usage, "price": effectivePrice.price, 
-											"included": effectivePrice.includedQuantity, "includedForPeriod": includedForPeriod]
-				subTotal += usage*effectivePrice.price - includedAmountForPeriod
-				totalUsage += usage
+				if (usage > 0) {
+					//save just effective periods with usage
+					def effectivePrice = geteffectivePrice(it.pricingBook, pricingSet, product.guid, usage)
+					
+					def effectiveDays = (it.fromDate - it.toDate).days
+					
+					def includedForPeriod = (effectivePrice.includedQuantity *effectiveDays * 1.0) / billingDays
+					
+					//For better precision
+					def includedAmountForPeriod = (effectivePrice.includedQuantity * effectivePrice.price * effectiveDays * 1.0) / billingDays
+					
+					effectivePeriodsDetails << ["fromDate": it.fromDate, "toDate": it.toDate, 
+												"usage": usage, "price": effectivePrice.price, 
+												"included": effectivePrice.includedQuantity, "includedForPeriod": includedForPeriod]
+					subTotal += usage*effectivePrice.price - includedAmountForPeriod
+					totalUsage += usage
+				}
 			}
 			transactions << ["effectivePeriods": effectivePeriodsDetails,
 							 "fromDate": billingFromDate,

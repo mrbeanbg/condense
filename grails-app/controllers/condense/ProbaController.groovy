@@ -15,7 +15,24 @@ class ProbaController {
 //		print billingService.getDaysInMonth(dateFormat.parse("2016-04-04"))
 		//testPricingBook()
 		//testBillingPeriodsChunks()
-		geteffectivePricingPeriods()
+		//geteffectivePricingPeriods()
+		manualImportUsage()
+	}
+	def manualImportUsage() {
+		def foundCustomer = Customer.findByCspCustomerId("customer-123")
+		def customerSubscription = foundCustomer.subscriptions[0]
+		//print "BEFORE SEARCH ${customerSubscription}"
+		UsageRecord.where { id > new Long(-1) }.deleteAll()
+		
+		def dateFormatUsage = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
+		dateFormatUsage.setTimeZone(TimeZone.getTimeZone("GMT"))
+		def usageDate = dateFormat.parse("2016-05-02T00:00:00+00:00")
+		new UsageRecord(startTime: usageDate, endTime: usageDate + 1, subscription: customerSubscription, quantity: 1, meteredId: "0d1aa0ed-0a5d-4e42-ab7c-a12f55699b33").save()
+		new UsageRecord(startTime: usageDate, endTime: usageDate + 1, subscription: customerSubscription, quantity: 2, meteredId: "0d1aa0ed-0a5d-4e42-ab7c-a12f55699b33").save()
+		new UsageRecord(startTime: usageDate, endTime: usageDate + 1, subscription: customerSubscription, quantity: 5, meteredId: "cce2c24b-69a1-44cc-9f8a-963aa0c8f648").save()
+		new UsageRecord(startTime: usageDate, endTime: usageDate + 1, subscription: foundCustomer.subscriptions[1], metredId: "cce2c24b-69a1-44cc-9f8a-963aa0c8f648", quantity: 4).save()
+		
+		billingService.getCustomerTransactions(foundCustomer, dateFormat.parse("2016-05-02"), dateFormat.parse("2016-05-16"))
 	}
 	
 	def geteffectivePricingPeriods() {
