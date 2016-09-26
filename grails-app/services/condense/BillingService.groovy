@@ -130,7 +130,7 @@ class BillingService {
 		def nextBillingDate
 
 		if (billingPeriodDays == null) {
-			nextBillingDate += getDaysInMonth(nextBillingDate)
+			nextBillingDate = fromDate + getDaysInMonth(fromDate)
 		} else {
 			nextBillingDate += billingPeriodDays
 		}
@@ -193,28 +193,30 @@ class BillingService {
 			return []
 		}
 		
-		effectivePeriods = []
+		def effectivePeriods = []
 		def pricingBookIndex = 0
-		billingPeriods.each {
+		billingPeriods.eachWithIndex { billingPeriod, index ->
 			def currentPricingBook = effectivePricingBooks[pricingBookIndex]
 			if (pricingBookIndex == effectivePricingBooks.size() - 1) {
 				// Reached the last pricing book i.e. this is the last pricing change and should be applicable the whole billing period
-				effectivePeriods << ["fromDate": it.fromDate, "toDate": it.toDate, "pricingBook": currentPricingBook]
+				effectivePeriods << ["fromDate": billingPeriod.fromDate, "toDate": billingPeriod.toDate, "pricingBook": currentPricingBook]
 				
 			} else {
 				def nextPricingBook = effectivePricingBooks[pricingBookIndex + 1]
-				def fromDate = it.fromDate
-				while (pricingBookIndex < (effectivePricingBooks.size() - 1) && nextPricingBook.fromDate < it.toDate) {
+				def fromDate = billingPeriod.fromDate
+				while (pricingBookIndex < (effectivePricingBooks.size() - 1) && nextPricingBook.fromDate < billingPeriod.toDate) {
 					effectivePeriods << ["fromDate": fromDate, "toDate": nextPricingBook.fromDate, "pricingBook": currentPricingBook]
 					fromDate = nextPricingBook.fromDate
 					currentPricingBook = nextPricingBook
 					pricingBookIndex++
 					nextPricingBook = effectivePricingBooks[pricingBookIndex + 1]
 				}
-				if (nextPricingBook.fromDate < it.toDate) {
+				if (nextPricingBook && nextPricingBook.fromDate < billingPeriod.toDate) {
 					// The last pricing book is reached. Split the rest of the billing period in 2
-					effectivePeriods << ["fromDate": fromDate, "toDate": nextPricingBook.fromDate, "pricingBook": currentPricingBook]
-					effectivePeriods << ["fromDate": nextPricingBook.fromDate, "toDate": toDate, "pricingBook": nextPricingBook]
+					effectivePeriods << ["fromDate": fromDate, "toDate": nextPricingBook.fromDate, "pricingBook": nextPricingBook]
+					effectivePeriods << ["fromDate": nextPricingBook.fromDate, "toDate": billingPeriod.toDate, "pricingBook": nextPricingBook]
+				} else {
+					effectivePeriods << ["fromDate": fromDate, "toDate": billingPeriod.toDate, "pricingBook": currentPricingBook]
 				}
 			}
 		}
