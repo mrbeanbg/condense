@@ -86,5 +86,7 @@ grails.project.dependency.resolution = {
 		compile "org.grails.plugins:rest-client-builder:2.1.1"
 		
 		compile "org.grails.plugins:quartz:1.0.2"
+		
+		compile ':quartz-monitor:1.1'
     }
 }
