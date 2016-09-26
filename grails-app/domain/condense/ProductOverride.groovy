@@ -25,7 +25,7 @@ class ProductOverride {
 		includedQuantity nullable: true
 		startQuantity blank: false
 		overrideType blank: false
-		amount blank: false, size: 30, scale: 15
+		amount blank: false, scale: 15, max: 99999999999999999999.999999999999999
     }
 	
 	public String toString() {

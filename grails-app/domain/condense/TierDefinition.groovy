@@ -20,7 +20,7 @@ class TierDefinition {
     static constraints = {
 		startQuantity blank: false
 		includedQuantity nullable: true
-		price blank: false, size:30, scale: 15
+		price blank: false, scale: 15, max: 99999999999999999999.999999999999999
     }
 	
 	public String toString() {

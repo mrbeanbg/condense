@@ -14,8 +14,8 @@ class SupportPlan {
 	
     static constraints = {
 		name blank:false, unique: true
-		minCharge nullable:true, scale: 2
-		maxCharge nullable:true, scale: 2
+		minCharge nullable:true, scale: 15, max: 99999999999999999999.999999999999999
+		maxCharge nullable:true, scale: 15, max: 99999999999999999999.999999999999999
     }
 	
 	static hasMany = [
