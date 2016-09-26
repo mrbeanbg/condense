@@ -310,7 +310,7 @@ class BillingService {
 			transactions << ["effectivePeriods": effectivePeriodsDetails,
 							 "fromDate": billingPeriodFromDate,
 							 "toDate": billingPeriodToDate,
-							 "subTotal": subTotal,
+							 "subTotal": subTotal > 0 ? subTotal : 0,
 							 "totalUsage": totalUsage]
 		}
 		return transactions
