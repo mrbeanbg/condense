@@ -58,7 +58,11 @@
 						<dt id="subscriptions-label" class="property-label"><g:message code="customer.subscriptions.label" default="Subscriptions" /></dt>
 						
 							<g:each in="${customerInstance.subscriptions}" var="s">
-							<dd class="property-value" aria-labelledby="subscriptions-label">${s?.encodeAsHTML()}</dd>
+							<dd class="property-value" aria-labelledby="subscriptions-label">
+								<g:link controller="subscription" action="show" id="${s.id}">
+									${s?.encodeAsHTML()}
+								</g:link>
+							</dd>
 							</g:each>
 						
 					</dl>

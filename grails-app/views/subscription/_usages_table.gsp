@@ -1,15 +1,15 @@
 									<table class="table table-striped table-bordered table-hover">
 										<thead>
 											<tr>
-												<util:remoteSortableColumn update="usagesTable" action="usages" property="startTime" title="${message(code: 'start.date.label', default: 'Start Date')}" defaultOrder="desc" />
+												<util:remoteSortableColumn update="usagesTable" action="usages" property="startTime" title="${message(code: 'start.date.label', default: 'Start Date')}" params="${[filterFromDate: params.filterFromDate, filterToDate: params.filterToDate].findAll {it.value} }" />
 												
-												<util:remoteSortableColumn update="usagesTable" action="usages" property="endTime" title="${message(code: 'end.date.label', default: 'End Date')}" />
+												<util:remoteSortableColumn update="usagesTable" action="usages" property="endTime" title="${message(code: 'end.date.label', default: 'End Date')}" params="${[filterFromDate: params.filterFromDate, filterToDate: params.filterToDate].findAll {it.value} }" />
 											
-												<util:remoteSortableColumn update="usagesTable" action="usages" property="name" title="${message(code: 'name.label', default: 'Name')}" />
+												<util:remoteSortableColumn update="usagesTable" action="usages" property="name" title="${message(code: 'name.label', default: 'Name')}" params="${[filterFromDate: params.filterFromDate, filterToDate: params.filterToDate].findAll {it.value} }" />
 											
-												<util:remoteSortableColumn update="usagesTable" action="usages" property="quantity" title="${message(code: 'quantity.label', default: 'Quantity')}" />
+												<util:remoteSortableColumn update="usagesTable" action="usages" property="quantity" title="${message(code: 'quantity.label', default: 'Quantity')}" params="${[filterFromDate: params.filterFromDate, filterToDate: params.filterToDate].findAll {it.value} }" />
 											
-												<util:remoteSortableColumn update="usagesTable" action="usages" property="region" title="${message(code: 'region.label', default: 'Region')}" />
+												<util:remoteSortableColumn update="usagesTable" action="usages" property="region" title="${message(code: 'region.label', default: 'Region')}" params="${[filterFromDate: params.filterFromDate, filterToDate: params.filterToDate].findAll {it.value} }" />
 												
 											</tr>
 										</thead>
@@ -42,5 +42,5 @@
 									</table>
 									
 									<div class="pagination">
-										<util:remotePaginate update="usagesTable" action="usages" total="${usageRecordsCount ?: 0}" params="${[id: subscriptionInstance?.id]}"/>
+										<util:remotePaginate update="usagesTable" action="usages" total="${usageRecordsCount ?: 0}" params="${[id: subscriptionInstance?.id, filterFromDate: params.filterFromDate, filterToDate: params.filterToDate].findAll {it.value} }" />
 									</div>

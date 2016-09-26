@@ -13,7 +13,6 @@
 				<ul class="nav nav-pills">
 					<li class="active"><a class="home" href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></li>
 					<li><g:link class="list" action="index"><g:message code="default.list.label" args="[entityName]" /></g:link></li>
-					<li><g:link class="create" action="create"><g:message code="default.new.label" args="[entityName]" /></g:link></li>
 				</ul>
 			</div>
 			<div id="show-subscription" class="content scaffold-show" role="main">
@@ -72,24 +71,35 @@
 						
 					</dl>
 					</g:if>
-				
-					<g:if test="${subscriptionInstance?.usageRecords}">
-					<dl class="dl-horizontal">
-						<dt id="usageRecords-label" class="property-label"><g:message code="subscription.usageRecords.label" default="Usage Records" /></dt>
-							<dd class="property-value" aria-labelledby="usageRecords-label">
-								<div class="col-md-12" id="usagesTable"></div><g:render template="usages_table" /></div>
-							</dd>
-						
-					</dl>
-					</g:if>
-				
 				</ul>
-				<g:form url="[resource:subscriptionInstance, action:'delete']" method="DELETE">
-					<fieldset class="buttons">
-						<g:link class="btn btn-primary" action="edit" resource="${subscriptionInstance}"><g:message code="default.button.edit.label" default="Edit" /></g:link>
-						<g:actionSubmit class="btn btn-danger" action="delete" value="${message(code: 'default.button.delete.label', default: 'Delete')}" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');" />
-					</fieldset>
-				</g:form>
+				
+				<hr/>
+				
+				<div class="col-md-12" style="padding-bottom: 20px">
+					<g:formRemote name="filterUsagesForm" update="usagesTable" method="GET"
+						url="${[controller: 'subscription', action: 'usages', id: subscriptionInstance?.id]}">
+						<div class="col-md-4">
+							<label>
+								<g:message code="from.date" default="From Date"/>:
+							</label>
+							<g:datePicker name="filterFromDate" precision="day" id="filterFromDate" value="${new Date()-1}"/>
+						</div>
+						<div class="col-md-4">
+							<label>
+								<g:message code="to.date" default="To Date" />:
+							</label>
+							<g:datePicker name="filterToDate" precision="day" id="filterFromDate"/>
+						</div>
+						<div class="col-md-4">
+							<g:submitButton name="usages" class="btn btn-primary" value="${message(code: 'filter.usages', default: 'Filter Usages')}" />
+						</div>
+					</g:formRemote>
+				</div>
+				
+				
+				<div class="col-md-12" id="usagesTable">
+					<g:render template="usages_table" />
+				</div>
 			</div>
 		</div>
 	</body>

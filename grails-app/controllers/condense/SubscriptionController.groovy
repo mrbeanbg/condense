@@ -21,11 +21,12 @@ class SubscriptionController {
     }
 
     def show(Subscription subscriptionInstance) {
-		params.max = 10
-		def id = params.id
-		params.remove("id")
-		print params
+		params.max = 50
 		
+		if (!params.containsKey("sort")) {
+			params.sort = "startTime"
+			params.order = "desc"
+		}
 		def usageRecords = UsageRecord.where {
 			subscription == subscriptionInstance
 		}.list(params)
@@ -34,11 +35,40 @@ class SubscriptionController {
 			subscription == subscriptionInstance
 		}.count()
 		
-		print usageRecordsCount
-		
-		params.id = id
         respond subscriptionInstance, model: [usageRecords: usageRecords, usageRecordsCount: UsageRecord.count()]
     }
+	
+	def usages(Subscription subscriptionInstance) {
+		params.max = 50
+		
+		if (!params.containsKey("sort")) {
+			params.sort = "startTime"
+			params.order = "desc"
+		}
+		def usageRecords = UsageRecord.where {
+			if (params.filterFromDate) {
+				startTime >= params.filterFromDate
+			}
+			if (params.filterToDate) {
+				endTime <= params.filterToDate
+			}
+			subscription == subscriptionInstance
+		}.list(params)
+		
+		def usageRecordsCount = UsageRecord.where {
+			if (params.filterFromDate) {
+				startTime >= params.filterFromDate
+			}
+			if (params.filterToDate) {
+				endTime <= params.filterToDate
+			}
+			subscription == subscriptionInstance
+		}.count()
+		
+        respond subscriptionInstance,
+			model: [usageRecords: usageRecords, usageRecordsCount: usageRecordsCount],
+			view: "_usages_table"
+	}
 
 	def obtain_usage(Subscription subscriptionInstance) {
 		if (subscriptionInstance == null) {
