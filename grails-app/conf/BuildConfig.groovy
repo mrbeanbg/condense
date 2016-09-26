@@ -46,6 +46,7 @@ grails.project.dependency.resolution = {
 //        mavenRepo "http://repository.jboss.com/maven2/"
 		mavenRepo "http://repo.grails.org/grails/libs-releases/"
 		mavenRepo "http://m2repo.spockframework.org/ext/"
+		mavenRepo "http://central.maven.org/maven2/"
     }
 
     dependencies {
@@ -53,6 +54,7 @@ grails.project.dependency.resolution = {
         // runtime 'mysql:mysql-connector-java:5.1.29'
         // runtime 'org.postgresql:postgresql:9.3-1101-jdbc41'
         test "org.grails:grails-datastore-test-support:1.0-grails-2.4"
+		runtime "joda-time:joda-time:2.9.4"
     }
 
     plugins {
@@ -76,6 +78,8 @@ grails.project.dependency.resolution = {
         //compile ":handlebars-asset-pipeline:1.3.0.3"
 		
 		runtime ":twitter-bootstrap:3.3.1"
+		
+		compile ":remote-pagination:0.4.8"
 		
 		compile "org.grails.plugins:csv:0.3.1"
 		

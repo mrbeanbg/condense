@@ -6,6 +6,8 @@ import java.text.DateFormat;
 import java.text.DecimalFormat
 import java.text.SimpleDateFormat
 
+import org.joda.time.DateTime;
+
 import grails.converters.JSON
 
 class UsageCollectorJob {
@@ -18,6 +20,7 @@ class UsageCollectorJob {
     }
 
     def execute() {
+		print "executing the job"
         def allSubscriptions = Subscription.list()
 		allSubscriptions.each { currentSubscription ->
 			if (currentSubscription.usageObtainedUntil != null && 
@@ -26,16 +29,25 @@ class UsageCollectorJob {
 			}
 			
 			def startTime = (currentSubscription.usageObtainedUntil != null) ? currentSubscription.usageObtainedUntil : new Date() - 1
+			
+			if (currentSubscription.usageObtainedUntil == null) {
+				DateTime dateTime = new DateTime(startTime).minusDays(1).withTime(0, 0, 0, 0);
+				startTime = dateTime.toDate()
+			}
 			def endTime = startTime + 1
 			
-			def startTimeStr = startTime.format("yyyy-MM-dd", TimeZone.getTimeZone("GMT")) + " 00:00:00Z"
-			def endTimeStr = endTime.format("yyyy-MM-dd", TimeZone.getTimeZone("GMT")) + " 00:00:00Z"
+			print "startTime:${startTime}"
+			print "endTime:${endTime}"
+			
+			def startTimeStr = startTime.format("yyyy-MM-dd") + " 00:00:00Z"
+			def endTimeStr = endTime.format("yyyy-MM-dd") + " 00:00:00Z"
 			
 			def usages = null
 			try {
 				usages = cspService.getUsage(currentSubscription.subscriptionId, startTimeStr, endTimeStr)
 			} catch (Exception ex) {
 				log.error("Unable to obtain usage for ${currentSubscription.subscriptionId}", ex)
+				return
 			}
 			
 			for (usage in usages) {

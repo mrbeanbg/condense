@@ -138,3 +138,9 @@ grails.assets.plugin."twitter-bootstrap".excludes = ["**/*.less"]
 grails.assets.plugin."twitter-bootstrap".includes = ["bootstrap.less"]
 
 grails.plugins.twitterbootstrap.fixtaglib = true
+
+
+//In Config.groovy
+grails.plugins.remotepagination.max=20
+//EnableBootstrap here when using twitter bootstrap, default is set to false.
+grails.plugins.remotepagination.enableBootstrap=true

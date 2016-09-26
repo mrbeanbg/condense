@@ -36,6 +36,7 @@ class CspService {
 		MultiValueMap<String, String> form = new LinkedMultiValueMap<String, String>()
 		
 		// get the usage
+		print "${cspAPIEndpoint}/${resellerId}/usage-records?entitlement_id=${subscriptionId}&reported_start_time=${startTime}&reported_end_time=${endTime}&show_details=True&granularity=daily"
 		def resp = rest.get("${cspAPIEndpoint}/${resellerId}/usage-records?entitlement_id=${subscriptionId}&reported_start_time=${startTime}&reported_end_time=${endTime}&show_details=True&granularity=daily") {
 			header 'Authorization', "Bearer ${resellerSAToken}"
 			header "api-version", "2015-03-31"
@@ -47,7 +48,26 @@ class CspService {
 			throw new UsageCollectionException("Unable to obtain usage: ${resp.getStatus()}, ${resp.text}")
 		}
 		
-		return resp.json.items
+		def usage = []
+		usage.addAll(resp.json.items)
+		
+		while (resp.json.containsKey("links") && resp.json.links.containsKey("next")) {
+			def nextPage = URLDecoder.decode(resp.json.links.next.href, "UTF-8")
+			resp = rest.get("${cspAPIEndpoint}/${nextPage}") {
+				header 'Authorization', "Bearer ${resellerSAToken}"
+				header "api-version", "2015-03-31"
+				header "x-ms-correlation-id", corelationId
+				header "x-ms-tracking-id", trackingId
+			}
+			
+			if (resp.getStatus() != 200) {
+				throw new UsageCollectionException("Unable to obtain usage: ${resp.getStatus()}, ${resp.text}, ${nextPage}")
+			}
+			
+			usage.addAll(resp.json.items)
+		}
+		
+		return usage
     }
 	
 	def obtainAzureADToken(appId, appKey, adAPIEndpoint, defaultDomain) {

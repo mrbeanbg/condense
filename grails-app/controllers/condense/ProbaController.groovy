@@ -1,6 +1,7 @@
 package condense
 
 import java.text.SimpleDateFormat
+import org.joda.time.DateTime
 
 class ProbaController {
 	PricingBookService pricingBookService
@@ -110,5 +111,10 @@ class ProbaController {
 		}
 		
 		render usages
+	}
+	
+	def test_time() {
+		DateTime dateTime = new DateTime(new Date()).minusDays(1).withTime(0, 0, 0, 0)
+		print dateTime
 	}
 }
