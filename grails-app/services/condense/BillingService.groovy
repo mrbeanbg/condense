@@ -367,6 +367,100 @@ class BillingService {
 		}
 		return subscriptionDetails
 	}
+	
+	private changeTheSubscriptionDetailsRepresentations(subscriptionInstance, subscriptionDetails, currencyRateInstance) {
+		def currencyRate = (currencyRateInstance != null) ? currencyRateInstance.rate : 1
+		def billingPeriods = [:]
+		
+		subscriptionDetails.each { currentProductDetailO ->
+			currentProductDetailO.details.each { currentBillingPeriodO ->
+				if (!billingPeriods.containsKey(currentBillingPeriodO.fromDate)) {
+					billingPeriods.add(currentBillingPeriodO.fromDate, [
+							fromDate: currentBillingPeriodO.fromDate,
+							toDate: currentBillingPeriodO.toDate,
+							products: [],
+							billingPeriodSubtotal: 0,
+							billintPeriodSupportCharges: 0,
+							billingPeriodTotal: 0,
+						]
+					)
+				}
+			}
+		}
+		
+		subscriptionDetails.each { currentProductDetailO ->
+			currentProductDetailO.details.each { currentBillingPeriodO ->
+				def currentBillingPeriod = billingPeriods.get(currentBillingPeriodO.fromDate)
+
+				def effectivePeriods = currentBillingPeriodO.effectivePeriods.collect {
+					it.price = it.price * currencyRate
+					return it
+				}
+				currentBillingPeriod.products << [
+						productGuid: currentProductDetailO.productGuid,
+						name: currentProductDetailO.name,
+						category: currentProductDetailO.category,
+						subcategory: currentProductDetailO.subcategory,
+						region: currentProductDetailO.region,
+						subTotal: currentBillingPeriodO.subTotal * currencyRate,
+						totalUsage: currentBillingPeriodO.totalUsage,
+						usgeAndPricingDetails: effectivePeriods
+					]
+				currentBillingPeriod.billingPeriodSubtotal +=  currentBillingPeriodO.subTotal * currencyRate
+				currentBillingPeriod.billingPeriodTotal = currentBillingPeriod.billingPeriodSubtotal
+			}
+		}
+		
+		def supportTiers = []
+		def minSupportCharge
+		def maxSupportCharge
+		
+		if (subscriptionInstance.customer.supportPlan != null) {
+			minSupportCharge = subscriptionInstance.customer.supportPlan.minCharge
+			maxSupportCharge = subscriptionInstance.customer.supportPlan.maxCharge
+			
+			if (minSupportCharge != null) {
+				minSupportCharge *= currencyRate
+			}
+			
+			if (maxSupportCharge != null) {
+				maxSupportCharge *= currencyRate
+			}
+			
+			supportTiers = SupportTier.where {
+				supportPlan == subscriptionInstance.customer.supportPlan
+			}.list(sort: "startAmount", order: "desc")
+		}
+		
+		if (supportTiers?.size() > 0) {
+			billingPeriods.each { billingPeriod ->
+				def theSupportCharges = 0
+				if (billingPeriod.value.billingPeriodSubtotal > 0) {
+					def matchingTier = supportTiers.find {
+						it.startAmount * currencyRate <= billingPeriod.value.billingPeriodSubtotal
+					}
+					
+					
+					if (matchingTier.tierType == SupportTier.TierType.FIXED) {
+						theSupportCharges = it.rate * currencyRate
+					} else {
+						theSupportCharges = billingPeriod.value.billingPeriodSubtotal * (1+it.rate/100)
+					}
+				}
+				
+				if (minSupportCharge != null && theSupportCharges < minSupportCharge) {
+					theSupportCharges = minSupportCharge
+				}
+				
+				if (maxSupportCharge != null && theSupportCharges > maxSupportCharge) {
+					theSupportCharges = maxSupportCharge
+				}
+				
+				billingPeriod.value.billintPeriodSupportCharges = theSupportCharges
+				billingPeriod.value.billingPeriodTotal = billingPeriod.value.billingPeriodSubtotal + billingPeriod.value.billintPeriodSupportCharges
+			}
+		}
+	}
 
 	/**
 	 * Get a summary of the generated consumptions for a given customer.
