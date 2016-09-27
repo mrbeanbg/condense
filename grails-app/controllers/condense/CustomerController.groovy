@@ -153,9 +153,13 @@ class CustomerController {
 			//Subscription.delete()
 		}
 		if (!subscriptionIdsToDelete.empty) {
-			Subscription.where {
-				subscriptionId in subscriptionIdsToDelete
-			}.deleteAll()
+			subscriptionIdsToDelete.each {
+				def subscriptionToRemove = Subscription.findBySubscriptionId(it)
+				subscriptionIdsToDelete.each {
+					customerInstance.removeFromSubscriptions(subscriptionToRemove)
+				}
+				subscriptionToRemove.delete(flush:true)
+			}
 		}
 		session['detailRows'].each {
 			if (!session['initialSubscriptionsIds'].contains(it.subscriptionId)) {
