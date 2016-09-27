@@ -53,15 +53,38 @@
 					</dl>
 					</g:if>
 				
-					<g:if test="${pricingBookInstance?.tierDefinitions}">
-					<dl class="dl-horizontal">
-						<dt id="tierDefinitions-label" class="property-label"><g:message code="pricingBook.tierDefinitions.label" default="Tier Definitions" /></dt>
+					<g:if test="${tierDefinitions}">
+<table class="table table-striped table-bordered table-hover">
+				<thead>
+						<tr>
+							
+							<td>Category</td>
+							<td>Subcategory</td>
+							<td>Region</td>
+							<td>Name</td>
+							<td>Resource ID</td>
+							<td>Included Quantities</td>
+							<td>Minimum Value</td>
+							<td>Price (USD)</td>
+						</tr>
+					</thead>
+					<tbody>
+					<g:each in="${tierDefinitions}" status="i" var="tierDefinition">
+						<tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
 						
-							<g:each in="${pricingBookInstance.tierDefinitions}" var="t">
-							<dd class="property-value" aria-labelledby="tierDefinitions-label"><g:link controller="tierDefinition" action="show" id="${t.id}">${t?.encodeAsHTML()}</g:link></dd>
-							</g:each>
+							<td>${tierDefinition.product.category.name}</td>
 						
-					</dl>
+							<td>${tierDefinition.product.subcategory?.name ?:""}</td>
+							<td>${tierDefinition.product.region.name != "Unspecified region" ? tierDefinition.product.region.name : ""}</td>
+							<td>${tierDefinition.product.name}</td>
+							<td>${tierDefinition.product.guid}</td>
+							<td>${tierDefinition.includedQuantity}</td>
+							<td>${tierDefinition.startQuantity}</td>
+							<td>${tierDefinition.price == 0 ? 0 : tierDefinition.price.stripTrailingZeros()}</td>
+						</tr>
+					</g:each>
+					</tbody>
+				</table>
 					</g:if>
 				
 				</ul>
