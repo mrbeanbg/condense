@@ -50,6 +50,7 @@
 									<g:message code="topnav.billing.usages.and.transactions" default="Usages and Billing Transacions"/><span class="caret"></span></a>
 								<ul class="dropdown-menu" role="menu">
 									<li><g:link controller="subscription" action="index"><g:message code="topnav.Usages" default="Subscriptions and Usages"/></g:link></li>
+									<li><g:link controller="billingTransactions" action="index"><g:message code="topnav.billing.Transactions" default="Billing Transactions"/></g:link></li>
 								</ul>
 							</li>
 						</ul>

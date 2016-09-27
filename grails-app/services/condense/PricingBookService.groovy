@@ -4,9 +4,14 @@ import grails.transaction.Transactional
 
 @Transactional
 class PricingBookService {
+	
+	def sessionFactory
+	def propertyInstanceMap = org.codehaus.groovy.grails.plugins.DomainClassGrailsPlugin.PROPERTY_INSTANCE_MAP
 
     def importPricingBook(Date inEffectFrom, String csvFileContent) {
-		def newPricingBook = new PricingBook(fromDate: inEffectFrom)//.save()
+		this.cleanUpGorm()
+		
+		def newPricingBook = new PricingBook(fromDate: inEffectFrom).save flush: true
 		
 		def allCategories = Category.list()
 		def allSubCategories = Subcategory.list()
@@ -52,7 +57,9 @@ class PricingBookService {
 				
 				def tierProduct = allProducts.find { it.guid ==  tokens[5]}
 				def newTier = new TierDefinition(includedQuantity: tokens[7],
-					startQuantity: tokens[8], price: tokens[23], product: tierProduct)
+					startQuantity: tokens[8], price: tokens[23], product: tierProduct,
+					pricingBook: newPricingBook)
+				//newTier.save flush: true
 				newPricingBook.addToTierDefinitions(newTier)
 			}
 			firstRowSkipped = true
@@ -60,6 +67,15 @@ class PricingBookService {
 		
 		newPricingBook.save flush:true
 		
+		this.cleanUpGorm()
+		
 		return newPricingBook
     }
+	
+	def cleanUpGorm() {
+		def session = sessionFactory.currentSession
+		session.flush()
+		session.clear()
+		propertyInstanceMap.get().clear()
+	}
 }

@@ -80,7 +80,7 @@ class SubscriptionController {
 		if (subscriptionInstance.usageObtainedUntil != null) {
 			startDate = subscriptionInstance.usageObtainedUntil
 		} else {
-			startDate = new Date() - 2 
+			startDate = new Date() - 1 
 		}
 		
 		def endDate = startDate + 1

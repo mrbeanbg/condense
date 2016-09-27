@@ -25,9 +25,9 @@
 				<table class="table table-striped table-bordered table-hover">
 				<thead>
 						<tr>
-							<th><g:message code="subscription.customer.label" default="Customer" /></th>
-							
 							<g:sortableColumn property="subscriptionId" title="${message(code: 'subscription.subscriptionId.label', default: 'Subscription Id')}" />
+							
+							<th><g:message code="subscription.customer.label" default="Customer" /></th>
 						
 							<g:sortableColumn property="usageObtainedUntil" title="${message(code: 'subscription.usageObtainedUntil.label', default: 'Usage Obtained Until')}" />
 							
@@ -38,14 +38,14 @@
 					<tbody>
 					<g:each in="${subscriptionInstanceList}" status="i" var="subscriptionInstance">
 						<tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
-						
+							
+							<td>${fieldValue(bean: subscriptionInstance, field: "subscriptionId")}</td>
+							
 							<td>
 								<g:link controller="customer" action="show" id="${subscriptionInstance?.customer?.id}">
 									${fieldValue(bean: subscriptionInstance, field: "customer")}
 								</g:link>
 							</td>
-						
-							<td>${fieldValue(bean: subscriptionInstance, field: "subscriptionId")}</td>
 						
 							<td>
 								<g:if test="${subscriptionInstance.usageObtainedUntil == null}">
