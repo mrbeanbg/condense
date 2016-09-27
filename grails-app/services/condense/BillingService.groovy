@@ -39,7 +39,6 @@ class BillingService {
 		}).max {
 			it.startQuantity
 		}
-		//print matchedTier
 		return matchedTier
 	}
 	
@@ -83,6 +82,8 @@ class BillingService {
 			} else {
 				price = override.amount
 			}
+		} else if (pricingSet.defaultOverride != null) {
+			price += price*pricingSet.defaultOverride / 100.0
 		}
 		//print "Override: ${override}"
 		
