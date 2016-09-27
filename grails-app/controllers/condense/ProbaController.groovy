@@ -30,8 +30,8 @@ class ProbaController {
 		new UsageRecord(startTime: usageDate, endTime: usageDate + 1, subscription: customerSubscription, quantity: 10000, meteredId: "f2dee52c-2ead-4685-b743-d2cac3073ded").save()
 		new UsageRecord(startTime: usageDate, endTime: usageDate + 1, subscription: customerSubscription, quantity: 20000, meteredId: "f2dee52c-2ead-4685-b743-d2cac3073ded").save()
 		new UsageRecord(startTime: usageDate, endTime: usageDate + 1, subscription: customerSubscription, quantity: 500000, meteredId: "e0d5dad9-c5ce-433d-bea3-2b4c699c3d5e").save()
-		new UsageRecord(startTime: usageDate, endTime: usageDate + 1, subscription: foundCustomer.subscriptions[1], meteredId: "e0d5dad9-c5ce-433d-bea3-2b4c699c3d5e", quantity: 400000).save()
-		
+		new UsageRecord(startTime: usageDate+1, endTime: usageDate + 2, subscription: foundCustomer.subscriptions[1], meteredId: "e0d5dad9-c5ce-433d-bea3-2b4c699c3d5e", quantity: 300000).save()
+		new UsageRecord(startTime: usageDate+10, endTime: usageDate + 11, subscription: foundCustomer.subscriptions[1], meteredId: "e0d5dad9-c5ce-433d-bea3-2b4c699c3d5e", quantity: 200000).save()
 		def dateFormat = new SimpleDateFormat("yyyy-MM-dd")
 		dateFormat.setTimeZone(TimeZone.getTimeZone("GMT"))
 		//print billingService.getCustomerTransactions(foundCustomer, dateFormat.parse("2016-05-02"), dateFormat.parse("2016-05-16"))

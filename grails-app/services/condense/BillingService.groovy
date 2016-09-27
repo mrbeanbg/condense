@@ -252,20 +252,21 @@ class BillingService {
 		return calendar.getActualMaximum(Calendar.DATE);		
 	}
 	
-	def getProductUsage(Product product, Date fromDate, Date toDate) {		
+	def getProductUsage(Long subscriptionId, Product product, Date fromDate, Date toDate) {		
 		def allUsages = UsageRecord.createCriteria().list {
 			and {
+				eq ("subscription.id", subscriptionId)
 				eq ("meteredId", product.guid)
 				ge ("startTime", fromDate)
 				lt ("startTime", toDate)
 			}
 		}
 		def totalUsage = allUsages*.quantity.sum()
-		print "========Total usage: ${totalUsage}"
+		
 		return totalUsage == null ? 0 : totalUsage
 	}
 	
-	def getProductTransactions(PricingSet pricingSet, Product product, List billingPeriods, List effectivePeriods, Integer billingPeriodDays = null) {
+	def getProductTransactions(PricingSet pricingSet, Long subscriptionId, Product product, List billingPeriods, List effectivePeriods, Integer billingPeriodDays = null) {
 		if (billingPeriods.size() == 0) {
 			return []
 		}
@@ -283,11 +284,12 @@ class BillingService {
 			
 			def effectivePeriodsDetails = []
 			def subTotal = 0
-			def totalUsage = 0
+			def totalUsage = getProductUsage(subscriptionId, product, billingPeriodFromDate, billingPeriodToDate)
+			
 			billingEffectivePeriods.each {
-				def usage = getProductUsage(product, it.fromDate, it.toDate)
+				def usage = getProductUsage(subscriptionId, product, it.fromDate, it.toDate)
 					
-				def effectivePrice = getEffectivePrice(it.pricingBook, pricingSet, product.guid, usage)
+				def effectivePrice = getEffectivePrice(it.pricingBook, pricingSet, product.guid, totalUsage)
 				
 				def effectiveFromDate = it.fromDate
 				def effectiveToDate = it.toDate
@@ -305,8 +307,6 @@ class BillingService {
 											"usage": usage, "price": effectivePrice.price, 
 											"included": effectivePrice.includedQuantity, "includedForPeriod": includedForPeriod]
 				subTotal += usage*effectivePrice.price - includedAmountForPeriod
-				totalUsage += usage
-				
 			}
 			transactions << ["effectivePeriods": effectivePeriodsDetails,
 							 "fromDate": billingPeriodFromDate,
@@ -355,7 +355,7 @@ class BillingService {
 					def subcategory = product.subcategory?.name
 					def region = product.region.name
 					
-					def productDetails = getProductTransactions(pricingSet,
+					def productDetails = getProductTransactions(pricingSet, subscription.id,
 						product, billingPeriods, effectivePeriods, billingPeriodDays)
 					subscriptionDetails << ["productGuid": productGuid, 
 											"name": productName, 
