@@ -317,7 +317,7 @@ class BillingService {
 	}
 	
 	def getSubscriptionTransactions(Subscription subscription, Date fromDate, Date toDate, 
-		Integer billingPeriodDays = null, Boolean isSimpleBillingPolicy = false, CurrencyRate currencyRate) {
+			Integer billingPeriodDays = null, Boolean isSimpleBillingPolicy = false, CurrencyRate currencyRate) {
 		checkBillingPeriodDates(fromDate, toDate, billingPeriodDays)
 		print "===== getSubscriptionUsage ${subscription}"
 		//assumed that the records are collected daily
@@ -365,17 +365,21 @@ class BillingService {
 				}
 			}
 		}
+		
+		subscriptionDetails = this.changeTheSubscriptionDetailsRepresentations(subscription, subscriptionDetails, currencyRate)
+		
 		return subscriptionDetails
 	}
 	
 	private changeTheSubscriptionDetailsRepresentations(subscriptionInstance, subscriptionDetails, currencyRateInstance) {
 		def currencyRate = (currencyRateInstance != null) ? currencyRateInstance.rate : 1
+		
 		def billingPeriods = [:]
 		
 		subscriptionDetails.each { currentProductDetailO ->
 			currentProductDetailO.details.each { currentBillingPeriodO ->
 				if (!billingPeriods.containsKey(currentBillingPeriodO.fromDate)) {
-					billingPeriods.add(currentBillingPeriodO.fromDate, [
+					billingPeriods.put(currentBillingPeriodO.fromDate, [
 							fromDate: currentBillingPeriodO.fromDate,
 							toDate: currentBillingPeriodO.toDate,
 							products: [],
@@ -432,34 +436,37 @@ class BillingService {
 			}.list(sort: "startAmount", order: "desc")
 		}
 		
-		if (supportTiers?.size() > 0) {
-			billingPeriods.each { billingPeriod ->
-				def theSupportCharges = 0
-				if (billingPeriod.value.billingPeriodSubtotal > 0) {
+		
+		billingPeriods.each { billingPeriod ->
+			def theSupportCharges = 0
+			if (billingPeriod.value.billingPeriodSubtotal > 0) {
+				if (supportTiers?.size() > 0) {
 					def matchingTier = supportTiers.find {
 						it.startAmount * currencyRate <= billingPeriod.value.billingPeriodSubtotal
 					}
 					
 					
 					if (matchingTier.tierType == SupportTier.TierType.FIXED) {
-						theSupportCharges = it.rate * currencyRate
+						theSupportCharges = matchingTier.rate * currencyRate
 					} else {
-						theSupportCharges = billingPeriod.value.billingPeriodSubtotal * (1+it.rate/100)
+						theSupportCharges = billingPeriod.value.billingPeriodSubtotal * matchingTier.rate/100
 					}
 				}
-				
-				if (minSupportCharge != null && theSupportCharges < minSupportCharge) {
-					theSupportCharges = minSupportCharge
-				}
-				
-				if (maxSupportCharge != null && theSupportCharges > maxSupportCharge) {
-					theSupportCharges = maxSupportCharge
-				}
-				
-				billingPeriod.value.billintPeriodSupportCharges = theSupportCharges
-				billingPeriod.value.billingPeriodTotal = billingPeriod.value.billingPeriodSubtotal + billingPeriod.value.billintPeriodSupportCharges
 			}
+			
+			if (minSupportCharge != null && theSupportCharges < minSupportCharge) {
+				theSupportCharges = minSupportCharge
+			}
+			
+			if (maxSupportCharge != null && theSupportCharges > maxSupportCharge) {
+				theSupportCharges = maxSupportCharge
+			}
+			
+			billingPeriod.value.billintPeriodSupportCharges = theSupportCharges
+			billingPeriod.value.billingPeriodTotal = billingPeriod.value.billingPeriodSubtotal + billingPeriod.value.billintPeriodSupportCharges
 		}
+		
+		return [billingPeriods: billingPeriods.values()]
 	}
 
 	/**
