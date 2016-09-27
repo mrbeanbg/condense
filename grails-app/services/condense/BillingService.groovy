@@ -34,18 +34,18 @@ class BillingService {
 	}
 	
 	def getOriginalTier(PricingBook currentPricingBook, String productGuid, BigDecimal quantity) {
-		def matchedTier = currentPricingBook.tierDefinitions.findAll({
-			it.product.guid == productGuid && it.startQuantity <= quantity
+		def matchedTier = TierDefinition.findAll({
+			pricingBook.id == currentPricingBook.id && product.guid == productGuid && startQuantity <= quantity
 		}).max {
 			it.startQuantity
 		}
 		return matchedTier
 	}
 	
-	def getEffectiveOverride(PricingSet pricingSet, String productGuid, BigDecimal quantity) {
-		print pricingSet.productOverrides
-		def productOverride = pricingSet.productOverrides.findAll({
-			it.product.guid == productGuid && it.startQuantity <= quantity
+	def getEffectiveOverride(PricingSet currentPricingSet, String productGuid, BigDecimal quantity) {
+		//print currentPricingSet.productOverrides
+		def productOverride = ProductOverride.findAll({
+			pricingSet.id == currentPricingSet.id && product.guid == productGuid && startQuantity <= quantity
 		}).max {
 			it.startQuantity
 		}

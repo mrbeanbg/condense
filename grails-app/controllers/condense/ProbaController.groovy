@@ -19,6 +19,8 @@ class ProbaController {
 		manualImportUsage()
 	}
 	def manualImportUsage() {
+		def testProduct = Product.find {guid == "e41c0dc6-9337-49a0-88a8-68df68c0b6b5"}
+		print "${testProduct}"
 		def foundCustomer = Customer.findByCspCustomerId("customer-123")
 		def customerSubscription = foundCustomer.subscriptions[0]
 		//print "BEFORE SEARCH ${customerSubscription}"
