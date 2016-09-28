@@ -384,7 +384,13 @@ class BillingService {
 	}
 	
 	private changeTheSubscriptionDetailsRepresentations(subscriptionInstance, subscriptionDetails, currencyRateInstance) {
-		def currencyRate = (currencyRateInstance != null) ? currencyRateInstance.rate : 1
+		def currencyRate = 1
+		def currencyAbbreviation = "USD"
+		
+		if (currencyRateInstance != null) {
+			currencyRate = currencyRateInstance.rate
+			currencyAbbreviation = currencyRateInstance.currency
+		}
 		
 		def billingPeriods = [:]
 		
@@ -478,7 +484,7 @@ class BillingService {
 			billingPeriod.value.billingPeriodTotal = billingPeriod.value.billingPeriodSubtotal + billingPeriod.value.billintPeriodSupportCharges
 		}
 		
-		return [billingPeriods: billingPeriods.values()]
+		return [billingPeriods: billingPeriods.values(), currency: currencyAbbreviation]
 	}
 
 	/**
