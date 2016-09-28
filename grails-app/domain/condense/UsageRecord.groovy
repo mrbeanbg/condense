@@ -35,8 +35,4 @@ class UsageRecord {
 	public String toString() {
 		return "${name} - ${quantity} - ${startTime} - ${endTime}";
 	}
-	
-	int hashCode() {
-		return toString().hashCode()
-	}
 }

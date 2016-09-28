@@ -30,7 +30,7 @@ class SupportTier {
 	static belongsTo = [supportPlan: SupportPlan]
 	
 	public String toString() {
-		return "${supportPlan.name} - ${startAmount}";
+		return "SA:${startAmount} - TT:${tierType} - RA:${rate}";
 	}
 	
 	boolean equals(o) {
@@ -38,11 +38,7 @@ class SupportTier {
 		if (getClass() != o.class) return false
 		SupportTier supportTier = (SupportTier) o
 		if (id != null && id == supportTier.id) return true
-		if (supportPlan != supportTier.supportPlan || startAmount != supportTier.startAmount) return false
+		if (startAmount != supportTier.startAmount || supportPlan != supportTier.supportPlan) return false
 		return true
-	}
-	
-	int hashCode() {
-		return toString().hashCode()
 	}
 }

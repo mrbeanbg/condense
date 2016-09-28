@@ -24,7 +24,7 @@ class TierDefinition {
     }
 	
 	public String toString() {
-		return "${pricingBook?.fromDate} - Category:${product?.category?.name} - SubCategory:${product?.subcategory?.name} - ProductName:${product?.name} - SQ:${startQuantity} - Price:${price}";
+		return "IQ: ${includedQuantity} SQ:${startQuantity} - Price:${price}";
 	}
 	
 	boolean equals(o) {
@@ -34,9 +34,5 @@ class TierDefinition {
 		if (id != null && id == tierDefinition.id) return true
 		if (pricingBook != tierDefinition.pricingBook || startQuantity != tierDefinition.startQuantity) return false
 		return true
-	}
-	
-	int hashCode() {
-		return toString().hashCode()
 	}
 }
