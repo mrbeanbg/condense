@@ -19,22 +19,26 @@ class PricingBookController {
 
     def show(PricingBook pricingBookInstance) {
 		
-		print "AAAAAAAAAAaa"
-		print pricingBookInstance?.tierDefinitions.size()
-		print "aaaaa" + TierDefinition.where {
-			pricingBook == pricingBookInstance
-		}.count()
-		return
-		
-//		def tierDefinitions = pricingBookInstance?.tierDefinitions.sort {tier_1, tier_2 ->
-//			def order = tier_1.product.category.name <=> tier_2.product.category.name 
-//			order = order ?: tier_1.product.subcategory?.name <=> tier_2.product.subcategory?.name
-//			order = order ?: tier_1.product.region.name <=> tier_2.product.region.name
-//			order = order ?: tier_1.product.name <=> tier_2.product.name
-//			order = order ?: tier_1.startQuantity <=> tier_2.startQuantity
-//			order
-//		}
-        [pricingBookInstance: pricingBookInstance, tierDefinitions: pricingBookInstance?.tierDefinitions]
+		def tierDefinitions = TierDefinition.createCriteria().list {
+			and {
+				eq("pricingBook.id", pricingBookInstance?.id)
+			}
+			product {
+				category {
+					order("name", "asc")
+				}
+				subcategory {
+					order("name", "asc")
+				}
+				region {
+					order("name", "asc")
+				}
+				order ("name", "asc")
+			}
+			order("startQuantity", "asc")
+		}
+
+        [pricingBookInstance: pricingBookInstance, tierDefinitions: tierDefinitions]
     }
 
     def create() {
