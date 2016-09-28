@@ -1,4 +1,6 @@
-									<g:hasErrors bean="${subscriptionInstance}">
+									<%@page import="grails.converters.JSON"%>
+<%@page import="groovy.json.JsonBuilder"%>
+<g:hasErrors bean="${subscriptionInstance}">
 									<div class="alert alert-danger">
 										<ul class="errors" role="alert">
 											<g:eachError bean="${subscriptionInstance}" var="error">
@@ -8,7 +10,7 @@
 									</div>
 									</g:hasErrors>
 									
-									${subscriptionTransctions}
+									${subscriptionTransctions as JSON}
 									
 <%--									<table class="table table-striped table-bordered table-hover">--%>
 <%--										<thead>--%>

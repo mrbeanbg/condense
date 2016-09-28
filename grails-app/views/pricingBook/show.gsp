@@ -64,7 +64,7 @@
 							<td>Name</td>
 							<td>Resource ID</td>
 							<td>Included Quantities</td>
-							<td>Minimum Value</td>
+							<td>Start Quantity</td>
 							<td>Price (USD)</td>
 						</tr>
 					</thead>

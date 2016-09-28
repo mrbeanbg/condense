@@ -81,8 +81,6 @@ class PricingBookController {
 
 		def products = pricingBookInstance.tierDefinitions.each() {
 			it.product.discard()
-			it.pricingBook.discard()
-			it.delete flush:true
 		}
 		
         pricingBookInstance.delete flush:true

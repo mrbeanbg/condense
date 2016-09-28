@@ -29,7 +29,7 @@ class ProductOverride {
     }
 	
 	public String toString() {
-		return "${pricingSet.name} - ${product.name} - ${startQuantity} - ${overrideType} - ${amount}";
+		return "IQ:${includedQuantity} SQ:${startQuantity} - ${overrideType} - ${amount}";
 	}
 	
 	boolean equals(o) {
@@ -39,10 +39,6 @@ class ProductOverride {
 		if (id != null && id == productOverride.id) return true
 		if (pricingSet != productOverride.pricingSet || startQuantity != productOverride.startQuantity) return false
 		return true
-	}
-	
-	int hashCode() {
-		return toString().hashCode()
 	}
 	
 	enum OverrideType {

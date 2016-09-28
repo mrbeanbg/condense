@@ -130,6 +130,9 @@ log4j.main = {
            'net.sf.ehcache.hibernate'
 	
 	error usageJobLog: 'grails.app.jobs'
+	
+	//trace 'org.hibernate.type'
+	//debug 'org.hibernate.SQL'
 }
 
 
