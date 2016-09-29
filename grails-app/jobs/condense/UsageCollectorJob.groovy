@@ -34,7 +34,7 @@ class UsageCollectorJob {
 				DateTime dateTime = new DateTime(startTime).minusDays(1).withTime(0, 0, 0, 0);
 				startTime = dateTime.toDate()
 			}
-			def endTime = startTime + 1
+			def endTime = new DateTime(new Date()).withTime(0, 0, 0, 0).toDate();
 			
 			print "startTime:${startTime}"
 			print "endTime:${endTime}"
