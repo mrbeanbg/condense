@@ -195,6 +195,7 @@ class PricingSetController {
 		]
 	}
 	
+	@Transactional
 	def ajax_add_tier() {
 		def currentPricingBook = PricingBook.get(params.currentPricingBookId)
 		def currentPricingSet = PricingSet.get(params.currentPricingSetId)

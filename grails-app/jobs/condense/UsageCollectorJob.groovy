@@ -9,6 +9,7 @@ import java.text.SimpleDateFormat
 import org.joda.time.DateTime;
 
 import grails.converters.JSON
+import grails.transaction.Transactional;
 
 class UsageCollectorJob {
 	def CspService cspService
@@ -19,6 +20,7 @@ class UsageCollectorJob {
 		cron name: 'usagesJobTrigger', cronExpression: "0 0 3 * * ?", timeZone:TimeZone.getTimeZone("UTC")
     }
 
+	@Transactional
     def execute() {
 		print "executing the job"
         def allSubscriptions = Subscription.list()

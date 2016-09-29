@@ -1,6 +1,9 @@
 package condense
 
+import grails.transaction.Transactional;
+
 import java.text.SimpleDateFormat
+
 import org.joda.time.DateTime
 
 class ProbaController {
@@ -18,6 +21,8 @@ class ProbaController {
 		//geteffectivePricingPeriods()
 		manualImportUsage()
 	}
+	
+	@Transactional
 	def manualImportUsage() {
 		def testProduct = Product.find {guid == "e41c0dc6-9337-49a0-88a8-68df68c0b6b5"}
 		print "${testProduct}"
@@ -39,6 +44,7 @@ class ProbaController {
 		//print billingService.getCustomerTransactions(foundCustomer, dateFormat.parse("2016-05-02"), dateFormat.parse("2016-05-16"))
 	}
 	
+	@Transactional
 	def geteffectivePricingPeriods() {
 		PricingBook.where { id > new Long(-1) }.deleteAll()
 		def dateFormat = new SimpleDateFormat("yyyy-MM-dd")
@@ -67,6 +73,7 @@ class ProbaController {
 		billingService.getBillingPeriods(dateFormat.parse("2015-02-10"), dateFormat.parse("2015-08-12"), 30, 5).each {print it}
 	}
 	
+	@Transactional
 	def testPricingBook() {
 		PricingBook.where { id > new Long(-1) }.deleteAll()
 		def dateFormat = new SimpleDateFormat("yyyy-MM-dd")
@@ -93,6 +100,7 @@ class ProbaController {
 		//print billingService.getEffectivePricingBooks(dateFormat.parse("2016-05-01"), dateFormat.parse("2016-05-16"))
 	}
 	
+	@Transactional
     def testPricingEffectivePrice() {
 		def file = new File("C:\\Users\\Ani\\Downloads\\pricing.csv")
 		def allLines = file.getText()

@@ -90,6 +90,7 @@ class SubscriptionController {
 			]
 	}
 	
+	@Transactional
 	def get_usage(Subscription subscriptionInstance) {
 		if (subscriptionInstance == null) {
 			notFound()

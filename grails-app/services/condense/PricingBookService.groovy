@@ -9,6 +9,7 @@ class PricingBookService {
 	SessionFactory sessionFactory
 	def propertyInstanceMap = org.codehaus.groovy.grails.plugins.DomainClassGrailsPlugin.PROPERTY_INSTANCE_MAP
 	
+	@Transactional
 	def importPricingBook(Date inEffectFrom, String csvFileContent) {
 		this.cleanUpGorm()
 		
