@@ -17,6 +17,7 @@ class RestCustomersController {
 		respond customer
 	}
 	
+	@Transactional
 	def delete(Customer customer) {
 		if(customer == null) {
 			render status:404

@@ -232,6 +232,7 @@ class PricingSetController {
 		respondWithTiersCalculated(currentPricingBook, currentPricingSet, currentProduct)
 	}
 	
+	@Transactional
 	def ajax_delete_tier() {
 		def tier = ProductOverride.where {
 			id == params.tierId

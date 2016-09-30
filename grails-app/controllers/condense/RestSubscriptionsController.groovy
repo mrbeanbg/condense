@@ -38,6 +38,7 @@ class RestSubscriptionsController {
 		respond subscription
 	}
 	
+	@Transactional
 	def delete (Subscription subscription) {
 		if(subscription == null) {
 			render status:404

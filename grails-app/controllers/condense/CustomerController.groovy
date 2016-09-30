@@ -150,7 +150,6 @@ class CustomerController {
 			if (!session['detailRows'].find {it.subscriptionId == currentSubscriptionId}) {
 				subscriptionIdsToDelete << currentSubscriptionId
 			}
-			//Subscription.delete()
 		}
 		if (!subscriptionIdsToDelete.empty) {
 			subscriptionIdsToDelete.each {
