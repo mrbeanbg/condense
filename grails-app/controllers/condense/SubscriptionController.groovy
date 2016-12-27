@@ -7,7 +7,9 @@ import grails.transaction.Transactional
 import java.text.DateFormat
 import java.text.DecimalFormat
 import java.text.SimpleDateFormat
+import grails.plugin.springsecurity.annotation.Secured;
 
+@Secured(['ROLE_MANAGER', 'ROLE_ADMIN'])
 @Transactional(readOnly = true)
 class SubscriptionController {
 	

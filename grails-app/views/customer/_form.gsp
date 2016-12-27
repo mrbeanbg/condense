@@ -11,6 +11,24 @@
 </span>
 </div>
 
+<div class="form-group fieldcontain ${hasErrors(bean: customerInstance, field: 'cspDomain', 'error')} required">
+	<label class="control-label col-md-2" for="cspCustomerId">
+		<g:message code="customer.cspDomain.label" default="CSP Domain" />
+		<span class="required-indicator">*</span>
+	</label>
+	<span class="controls col-md-10"><g:textField name="cspDomain" required="" value="${customerInstance?.cspDomain}"/>
+</span>
+</div>
+
+<div class="form-group fieldcontain ${hasErrors(bean: customerInstance, field: 'externalId', 'error')} required">
+	<label class="control-label col-md-2" for="externalId">
+		<g:message code="customer.externalId.label" default="External Id" />
+		<span class="required-indicator">*</span>
+	</label>
+	<span class="controls col-md-10"><g:textField name="externalId" required="" value="${customerInstance?.externalId}"/>
+</span>
+</div>
+
 <div class="form-group fieldcontain ${hasErrors(bean: customerInstance, field: 'pricingSet', 'error')} required">
 	<label class="control-label col-md-2" for="pricingSet">
 		<g:message code="customer.pricingSet.label" default="Pricing Set" />

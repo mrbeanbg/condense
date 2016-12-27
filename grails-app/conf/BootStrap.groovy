@@ -20,10 +20,43 @@ class BootStrap {
 		def newSubscription = new Subscription(subscriptionId: "subscription-123", customer: newCustomer).save()
 		new Subscription(subscriptionId: "subscription-ABC", customer: newCustomer).save()
 		
+		def userRoleAdmin = Role.findOrSaveWhere(authority: 'ROLE_ADMIN')
+		def userRoleManager = Role.findOrSaveWhere(authority: 'ROLE_MANAGER')
+		def userRoleApi = Role.findOrSaveWhere(authority: 'ROLE_API')
+		
+		def userAdmin
+		def userManager
+		def userApi
+		if (User.count() == 0) {
+			userAdmin = new User(username: "admin", password: "1234")
+									.save(failOnError: true)
+
+			userManager = new User(username: "manager", password: "1234")
+									.save(failOnError: true)
+									
+			userApi = new User(username: "api", password: "1234")
+									.save(failOnError: true)
+			
+			assert User.count() == 3
+		}
+		
+		if (!userAdmin.authorities.contains(userRoleAdmin)) {
+			UserRole.create(userAdmin, userRoleAdmin, true)
+		}
+		if (!userManager.authorities.contains(userRoleManager)) {
+			UserRole.create(userManager, userRoleManager, true)
+		}
+		if (!userApi.authorities.contains(userRoleApi)) {
+			UserRole.create(userApi, userRoleApi, true)
+		}
+		
+		new ConfigDb(key: "defaultPricingSet", value: 1).save(failOnError: true)
+		
 		JSON.registerObjectMarshaller(Customer) {
 			def map= [:]
-			map['id'] = it.id
 			map['cspCustomerId'] = it.cspCustomerId
+			map['cspDomain'] = it.cspDomain
+			map['externalId'] = it.externalId
 			map['pricingSetId'] = it.pricingSet?.id
 			map['supportPlanId'] = it.supportPlan?.id
 			return map
@@ -31,9 +64,8 @@ class BootStrap {
 		
 		JSON.registerObjectMarshaller(Subscription) {
 			def map= [:]
-			map['id'] = it.id
 			map['subscriptionId'] = it.subscriptionId
-			map['customerId'] = it.customer.id
+			map['cspCustomerId'] = it.customer.cspCustomerId
 			return map
 		}
 		

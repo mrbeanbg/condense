@@ -12,7 +12,7 @@
 			<div class="nav" role="navigation">
 				<ul class="nav nav-pills">
 					<li class="active"><a class="home" href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></li>
-					<li><g:link class="list" action="index"><g:message code="default.list.label" args="Subscriptions" /></g:link></li>
+					<li><g:link class="list" action="index"><g:message code="default.list.label" args="['Subscriptions']" /></g:link></li>
 				</ul>
 			</div>
 			<div id="show-subscription" class="content scaffold-show" role="main">

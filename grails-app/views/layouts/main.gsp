@@ -53,6 +53,20 @@
 									<li><g:link controller="billingTransactions" action="index"><g:message code="topnav.billing.Transactions" default="Billing Transactions"/></g:link></li>
 								</ul>
 							</li>
+							<sec:ifLoggedIn>
+							<li class="dropdown">
+								<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+									<g:message code="topnav.user.management" default="User Management"/><span class="caret"></span></a>
+								<ul class="dropdown-menu" role="menu">
+									<li><g:link controller="user" action="index"><g:message code="topnav.Users" default="Users"/></g:link></li>
+								</ul>
+							</li>
+							<li class="menu">
+								<form name="logout" method="POST" action="${createLink(controller:'logout') }"> 
+									<input type="submit" class="btn btn-default btn-danger navbar-btn" value="${message(code: 'logout.button.label', default: 'Logout')}">
+								</form>
+							</li>
+							</sec:ifLoggedIn>
 						</ul>
 					</div>
 				</div>

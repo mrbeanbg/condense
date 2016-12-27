@@ -34,6 +34,24 @@
 						
 					</dl>
 					</g:if>
+					
+					<g:if test="${customerInstance?.cspDomain}">
+					<dl class="dl-horizontal">
+						<dt id="cspDomain-label" class="property-label"><g:message code="customer.cspDomain.label" default="Csp Domain" /></dt>
+						
+							<dd class="property-value" aria-labelledby="cspDomain-label"><g:fieldValue bean="${customerInstance}" field="cspDomain"/></dd>
+						
+					</dl>
+					</g:if>
+					
+					<g:if test="${customerInstance?.externalId}">
+					<dl class="dl-horizontal">
+						<dt id="externalId-label" class="property-label"><g:message code="customer.externalId.label" default="External Id" /></dt>
+						
+							<dd class="property-value" aria-labelledby="externalId-label"><g:fieldValue bean="${customerInstance}" field="externalId"/></dd>
+						
+					</dl>
+					</g:if>
 				
 					<g:if test="${customerInstance?.pricingSet}">
 					<dl class="dl-horizontal">

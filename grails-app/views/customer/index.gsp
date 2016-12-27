@@ -28,6 +28,10 @@
 						<tr>
 						
 							<g:sortableColumn property="cspCustomerId" title="${message(code: 'customer.cspCustomerId.label', default: 'Csp Customer Id')}" />
+							
+							<th><g:message code="customer.cspDomain.label" default="CSP Domain" /></th>
+							
+							<th><g:message code="customer.externalId.label" default="External Id" /></th>
 						
 							<th><g:message code="customer.pricingSet.label" default="Pricing Set" /></th>
 						
@@ -44,6 +48,10 @@
 						<tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
 						
 							<td><g:link action="show" id="${customerInstance.id}">${fieldValue(bean: customerInstance, field: "cspCustomerId")}</g:link></td>
+							
+							<td>${fieldValue(bean: customerInstance, field: "cspDomain")}</td>
+							
+							<td>${fieldValue(bean: customerInstance, field: "externalId")}</td>
 						
 							<td>${fieldValue(bean: customerInstance, field: "pricingSet")}</td>
 						

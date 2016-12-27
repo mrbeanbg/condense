@@ -6,7 +6,9 @@ import static org.springframework.http.HttpStatus.*
 import grails.converters.JSON
 import grails.transaction.Transactional
 import org.springframework.dao.DataIntegrityViolationException
+import grails.plugin.springsecurity.annotation.Secured;
 
+@Secured(['ROLE_MANAGER', 'ROLE_ADMIN'])
 @Transactional(readOnly = true)
 class PricingSetController {
 

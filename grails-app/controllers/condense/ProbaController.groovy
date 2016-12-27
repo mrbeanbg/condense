@@ -5,7 +5,9 @@ import grails.transaction.Transactional;
 import java.text.SimpleDateFormat
 
 import org.joda.time.DateTime
+import grails.plugin.springsecurity.annotation.Secured;
 
+@Secured(['ROLE_MANAGER', 'ROLE_ADMIN'])
 class ProbaController {
 	PricingBookService pricingBookService
 	BillingService billingService

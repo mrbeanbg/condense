@@ -3,7 +3,9 @@ package condense
 import java.lang.ClassValue.Identity;
 
 import grails.transaction.Transactional;
+import grails.plugin.springsecurity.annotation.Secured;
 
+@Secured(['permitAll'])
 class RestSubscriptionsController {
 	static responseFormats = ['json']
 	
@@ -14,7 +16,7 @@ class RestSubscriptionsController {
 			return
 		}
 		
-		def cspCustomer = Customer.find {id == cspCustomerId.toLong()}
+		def cspCustomer = Customer.findByCspCustomerId(cspCustomerId)
 		if (cspCustomer == null) {
 			render status: 404
 			return
@@ -22,14 +24,16 @@ class RestSubscriptionsController {
 		respond Subscription.createCriteria().list {eq("customer.id", cspCustomer.id)}
 	}
 	
-	def show(Subscription subscription) {
+	def show() {
+		def subscription = Subscription.findBySubscriptionId(params.id)
+		
 		if(subscription == null) {
 			render status:404
 			return
 		}
-		def cspCustomerId = params.restCustomersId?.toLong()
+		def cspCustomerId = params.restCustomersId
 		if (cspCustomerId != null) {
-			if (subscription.customer.id != cspCustomerId) {
+			if (subscription.customer.cspCustomerId != cspCustomerId) {
 				render status: 404
 				return
 			}
@@ -39,14 +43,16 @@ class RestSubscriptionsController {
 	}
 	
 	@Transactional
-	def delete (Subscription subscription) {
+	def delete () {
+		def subscription = Subscription.findBySubscriptionId(params.id)
+		
 		if(subscription == null) {
 			render status:404
 			return
 		}
-		def cspCustomerId = params.restCustomersId?.toLong()
+		def cspCustomerId = params.restCustomersId
 		if (cspCustomerId != null) {
-			if (subscription.customer.id != cspCustomerId) {
+			if (subscription.customer.cspCustomerId != cspCustomerId) {
 				render status: 404
 				return
 			}
@@ -73,7 +79,7 @@ class RestSubscriptionsController {
 			}
 		}
 		
-		def cspCustomer = Customer.get(cspCustomerId.toLong())
+		def cspCustomer = Customer.findByCspCustomerId(cspCustomerId)
 		if (cspCustomer == null) {
 			render status: 404
 			return

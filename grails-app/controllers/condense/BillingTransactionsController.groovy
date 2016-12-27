@@ -1,7 +1,9 @@
 package condense
 
 import org.joda.time.DateTime;
+import grails.plugin.springsecurity.annotation.Secured;
 
+@Secured(['ROLE_MANAGER', 'ROLE_ADMIN'])
 class BillingTransactionsController {
 	
 	def billingService

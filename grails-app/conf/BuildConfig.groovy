@@ -88,5 +88,7 @@ grails.project.dependency.resolution = {
 		compile "org.grails.plugins:quartz:1.0.2"
 		
 		compile ':quartz-monitor:1.1'
+		
+		compile ":spring-security-core:2.0-RC5"
     }
 }

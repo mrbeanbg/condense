@@ -1,16 +1,22 @@
 package condense
 
 import grails.transaction.Transactional;
+import grails.plugin.springsecurity.annotation.Secured;
 
-
+@Secured(['permitAll'])
 class RestCustomersController {
+	
+	ConfigService configService
+	
 	static responseFormats = ['json']
 	
     def index(Integer max) { 
 		respond Customer.list()
 	}
 	
-	def show(Customer customer) {
+	def show() {
+		def customer = Customer.findByCspCustomerId(params.id)
+		
 		if(customer == null) {
 			render status:404
 		}
@@ -18,7 +24,9 @@ class RestCustomersController {
 	}
 	
 	@Transactional
-	def delete(Customer customer) {
+	def delete() {
+		def customer = Customer.findByCspCustomerId(params.id)
+		
 		if(customer == null) {
 			render status:404
 		}
@@ -30,7 +38,23 @@ class RestCustomersController {
 	def save() {
 		def pricingSetId = request.JSON?.pricingSetId?.toLong()
 		if (pricingSetId == null) {
-			render status: 400, text: "pricingSetId is required"
+			// TODO: obtain the default values PricingSet
+			pricingSetId = configService.getValue("defaultPricingSet")
+			if (pricingSetId == null) {
+				render status: 400, text: "pricingSetId is required"
+				return
+			}
+		}
+		
+		def cspDomain = request.JSON?.cspDomain
+		if (cspDomain == null) {
+			render status: 400, text: "cspDomain is required"
+			return
+		}
+		
+		def externalId = request.JSON?.externalId
+		if (externalId == null) {
+			render status: 400, text: "externalId is required"
 			return
 		}
 		
@@ -39,12 +63,12 @@ class RestCustomersController {
 			render status: 400, text: "cspCustomerId is required"
 			return
 
-		} else if (Customer.find{cspCustomerId == newCspCustomerId} != null) {
+		} else if (Customer.findByCspCustomerId(newCspCustomerId) != null) {
 			render status: 409, text: "CSP customer ${newCspCustomerId} already exists"
 			return
 		}
 		
-		def pricingSet = PricingSet.find{id == pricingSetId}
+		def pricingSet = PricingSet.find {id == pricingSetId}
 		
 		if (pricingSet == null) {
 			render status: 400, text: "Invalid pricing set ID"
@@ -53,6 +77,10 @@ class RestCustomersController {
 		
 		def supportPlanId = request.JSON?.supportPlanId?.toLong()
 		def supportPlan
+		if (supportPlanId == null) {
+			//TODO: obtain the default Support Plan
+			supportPlanId = configService.getValue("defaultSupportPlan")
+		}
 		if (supportPlanId != null) {
 			supportPlan = SupportPlan.find{id == supportPlanId}
 			if (supportPlan == null) {
@@ -62,7 +90,9 @@ class RestCustomersController {
 		}
 		
 		def customer = new Customer(
-			cspCustomerId: request.JSON?.cspCustomerId,
+			cspCustomerId: newCspCustomerId,
+			cspDomain: cspDomain,
+			externalId: externalId,
 			pricingSet: pricingSet,
 			supportPlan: supportPlan)
 		
@@ -78,13 +108,19 @@ class RestCustomersController {
 	
 	@Transactional
 	def update() {
-		Customer customer = Customer.get(params.id.toLong())
+		Customer customer = Customer.findByCspCustomerId(params.id)
 		if(customer == null) {
 			render status:404
 		}
-		def cspCustomerId = request.JSON?.cspCustomerId?.toLong()
-		if (cspCustomerId) {
-			customer.cspCustomerId = cspCustomerId
+		
+		def cspDomain = request.JSON?.cspDomain
+		if (cspDomain != null) {
+			customer.cspDomain = cspDomain
+		}
+		
+		def externalId = request.JSON?.externalId
+		if (externalId != null) {
+			customer.externalId = externalId
 		}
 		
 		def pricingSetId = request.JSON?.pricingSetId?.toLong()

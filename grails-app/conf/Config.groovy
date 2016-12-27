@@ -147,3 +147,20 @@ grails.plugins.twitterbootstrap.fixtaglib = true
 grails.plugins.remotepagination.max=20
 //EnableBootstrap here when using twitter bootstrap, default is set to false.
 grails.plugins.remotepagination.enableBootstrap=true
+
+// Added by the Spring Security Core plugin:
+grails.plugin.springsecurity.userLookup.userDomainClassName = 'condense.User'
+grails.plugin.springsecurity.userLookup.authorityJoinClassName = 'condense.UserRole'
+grails.plugin.springsecurity.authority.className = 'condense.Role'
+grails.plugin.springsecurity.controllerAnnotations.staticRules = [
+	'/':                ['permitAll'],
+	'/index':           ['permitAll'],
+	'/index.gsp':       ['permitAll'],
+	'/assets/**':       ['permitAll'],
+	'/**/js/**':        ['permitAll'],
+	'/**/css/**':       ['permitAll'],
+	'/**/images/**':    ['permitAll'],
+	'/**/favicon.ico':  ['permitAll'],
+	'/rest/**': 		['permitAll']
+]
+

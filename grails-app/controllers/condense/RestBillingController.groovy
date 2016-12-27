@@ -3,14 +3,16 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import grails.converters.*
+import grails.plugin.springsecurity.annotation.Secured;
 
+@Secured(['permitAll'])
 class RestBillingController {
 
 	BillingService billingService
 	
-    def index() { 
-		def data = ["ala": "bala"]
-		def subscription = Subscription.get(params.restSubscriptionsId?.toLong())
+    def index() {
+		print params 
+		def subscription = Subscription.findBySubscriptionId(params.restSubscriptionsId)
 		if (subscription == null) {
 			render status: 404
 			return

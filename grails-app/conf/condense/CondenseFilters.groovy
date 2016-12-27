@@ -2,7 +2,8 @@ package condense
 
 import org.codehaus.groovy.grails.web.sitemesh.GroovyPageLayoutFinder
 
-class CondenseFilters {	def passwordEncoder
+class CondenseFilters {
+	def passwordEncoder
 	static final AJAX_LAYOUT = "ajax"
 
 	def filters = {
@@ -27,9 +28,13 @@ class CondenseFilters {	def passwordEncoder
 						authString = athStringSplitted[1]
 						def base64DecodedAuthString = new String(authString.decodeBase64())
 						if (base64DecodedAuthString.contains(":")) {
+							print base64DecodedAuthString
 							def usernamePasswordSplittedAuth = base64DecodedAuthString.split(":")
-							if (usernamePasswordSplittedAuth.length == 2) {
-								if (usernamePasswordSplittedAuth[0] == "admin" && usernamePasswordSplittedAuth[1] == "admin") {
+							def sentUser = User.findByUsername(usernamePasswordSplittedAuth[0])
+							if (passwordEncoder.isPasswordValid(sentUser?.password, usernamePasswordSplittedAuth[1], null)) {
+								def userRoleApi = Role.findByAuthority('ROLE_API')
+								if (sentUser.authorities.contains(userRoleApi)) {
+									params.currentUser = sentUser
 									authenticated = true
 								}
 							}

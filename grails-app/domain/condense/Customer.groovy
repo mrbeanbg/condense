@@ -2,9 +2,12 @@ package condense
 
 import java.util.Date;
 
+import condense.ProductOverride.OverrideType;
+
 class Customer {
-	
 	String cspCustomerId
+	String cspDomain
+	String externalId
 	PricingSet pricingSet
 	SupportPlan supportPlan
 	
@@ -18,6 +21,8 @@ class Customer {
 	
     static constraints = {
 		cspCustomerId blank: false, unique: true
+		cspDomain()
+		externalId()
 		pricingSet()
 		supportPlan nullable: true
     }
