@@ -6,6 +6,8 @@ class Subscription {
 	
 	String subscriptionId
 	Date usageObtainedUntil
+	Boolean isActive = true
+	Date isActiveChangedOn
 
 	/* Automatic timestamping of GORM */
 	Date dateCreated
@@ -18,7 +20,15 @@ class Subscription {
     static constraints = {
 		subscriptionId blank:false, unique:true
 		usageObtainedUntil nullable: true
+		isActive defaultValue: true
+		isActiveChangedOn nullable: true
     }
+	
+	def beforeUpdate() {
+		if (isDirty('isActive') && isActive != this.getPersistentValue('isActive')) {
+			isActiveChangedOn = new Date()
+		}
+	}
 	
 	public String toString() {
 		return "${subscriptionId}";

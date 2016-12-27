@@ -66,6 +66,7 @@ class BootStrap {
 			def map= [:]
 			map['subscriptionId'] = it.subscriptionId
 			map['cspCustomerId'] = it.customer.cspCustomerId
+			map['isActive'] = 'true' ? it.isActive : 'false' 
 			return map
 		}
 		

@@ -94,4 +94,25 @@ class RestSubscriptionsController {
 		subscription.save flush:true
 		respond subscription.refresh(), [status: 201]
 	}
+	
+	@Transactional
+	def update() {
+		print params
+		Subscription subscription = Subscription.findBySubscriptionId(params.id)
+		if(subscription == null) {
+			render status:404
+		}
+		if (request.JSON?.isActive != null) {
+			subscription.isActive = request.JSON?.isActive
+			
+			if (!subscription.save(flush:true, failOnError:true)) {
+				if (subscription.hasErrors()) {
+					respond subscription.errors
+					return
+				}
+			}
+		}
+		
+		respond subscription.refresh()
+	}
 }

@@ -19,7 +19,7 @@ class UrlMappings {
 		}
 		"/rest/subscriptions" (resources: 'restSubscriptions') {
 			"/billing" (resources: 'restBilling')
-			action = [GET:"index", POST:"save"]
+			action = [GET:"index", PUT:"update", POST:"save"]
 		}
 		"/rest/supportPlans" (resources: 'restSupportPlans')
 

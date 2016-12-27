@@ -12,7 +12,7 @@ class ConfigDb {
 
     static constraints = {
 		key blank: false, unique: true
-		value blank: false
+		value blank: false, column: '`value`'
     }
 	
 	public String toString() {
