@@ -7,7 +7,7 @@ class ConfigService {
 
     def getValue(String fieldKey) {
 		def result = null
-		def configDb = ConfigDb.findByKey(fieldKey)
+		def configDb = ConfigDb.findByFieldKey(fieldKey)
 		if (configDb != null) {
 			result = configDb.fieldVal
 		}
