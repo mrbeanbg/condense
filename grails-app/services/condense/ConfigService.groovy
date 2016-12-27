@@ -5,11 +5,11 @@ import grails.transaction.Transactional
 @Transactional
 class ConfigService {
 
-    def getValue(String key) {
+    def getValue(String fieldKey) {
 		def result = null
-		def configDb = ConfigDb.findByKey(key)
+		def configDb = ConfigDb.findByKey(fieldKey)
 		if (configDb != null) {
-			result = configDb.val
+			result = configDb.fieldVal
 		}
 		result
     }

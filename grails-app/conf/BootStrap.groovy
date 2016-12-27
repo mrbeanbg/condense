@@ -51,7 +51,7 @@ class BootStrap {
 		}
 		
 		if (ConfigDb.count() == 0) {
-			new ConfigDb(key: "defaultPricingSet", val: 1).save(failOnError: true)
+			new ConfigDb(fieldKey: "defaultPricingSet", fieldVal: 1).save(failOnError: true)
 		}
 		
 		JSON.registerObjectMarshaller(Customer) {

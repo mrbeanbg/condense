@@ -3,20 +3,20 @@ package condense
 import java.util.Date;
 
 class ConfigDb {
-	String key
-	String val
+	String fieldKey
+	String fieldVal
 	
 	/* Automatic timestamping of GORM */
 	Date dateCreated
 	Date lastUpdated
 
     static constraints = {
-		key blank: false, unique: true
-		val blank: false
+		fieldKey blank: false, unique: true
+		fieldVal blank: false
     }
 	
 	public String toString() {
-		return "${key}:${val}";
+		return "${fieldKey}:${fieldVal}";
 	}
 	
 	boolean equals(o) {
@@ -24,11 +24,11 @@ class ConfigDb {
 		if (getClass() != o.class) return false
 		ConfigDb configDb = (ConfigDb) o
 		if (id != null && id == configDb.id) return true
-		if (key != configDb.key) return false
+		if (fieldKey != configDb.fieldKey) return false
 		return true
 	}
 	
 	int hashCode() {
-		return key.hashCode()
+		return fieldKey.hashCode()
 	}
 }
