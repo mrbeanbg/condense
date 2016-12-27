@@ -50,7 +50,9 @@ class BootStrap {
 			UserRole.create(userApi, userRoleApi, true)
 		}
 		
-		new ConfigDb(key: "defaultPricingSet", value: 1).save(failOnError: true)
+		if (ConfigDb.count() == 0) {
+			new ConfigDb(key: "defaultPricingSet", val: 1).save(failOnError: true)
+		}
 		
 		JSON.registerObjectMarshaller(Customer) {
 			def map= [:]

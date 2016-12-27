@@ -9,7 +9,7 @@ class ConfigService {
 		def result = null
 		def configDb = ConfigDb.findByKey(key)
 		if (configDb != null) {
-			result = configDb.value
+			result = configDb.val
 		}
 		result
     }

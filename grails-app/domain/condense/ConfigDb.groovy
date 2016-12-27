@@ -4,7 +4,7 @@ import java.util.Date;
 
 class ConfigDb {
 	String key
-	String value
+	String val
 	
 	/* Automatic timestamping of GORM */
 	Date dateCreated
@@ -12,11 +12,11 @@ class ConfigDb {
 
     static constraints = {
 		key blank: false, unique: true
-		value blank: false, column: '`value`'
+		val blank: false
     }
 	
 	public String toString() {
-		return "${key}:${value}";
+		return "${key}:${val}";
 	}
 	
 	boolean equals(o) {
