@@ -15,7 +15,9 @@ class RestCustomersController {
 	}
 	
 	def show() {
-		def customer = Customer.findByCspCustomerId(params.id)
+		print params
+		def customerId = (params.format != null) ? "${params.id}.${params.format}" : params.id
+		def customer = Customer.findByCspCustomerId(customerId)
 		
 		if(customer == null) {
 			render status:404
@@ -25,7 +27,8 @@ class RestCustomersController {
 	
 	@Transactional
 	def delete() {
-		def customer = Customer.findByCspCustomerId(params.id)
+		def customerId = (params.format != null) ? "${params.id}.${params.format}" : params.id
+		def customer = Customer.findByCspCustomerId(customerId)
 		
 		if(customer == null) {
 			render status:404

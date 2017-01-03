@@ -1,7 +1,6 @@
 import condense.*
 import grails.converters.JSON;
-import org.codehaus.groovy.grails.web.converters.configuration.ChainedConverterConfiguration
-import org.codehaus.groovy.grails.web.converters.configuration.DefaultConverterConfiguration
+import org.codehaus.groovy.grails.web.converters.configuration.*
 
 class BootStrap {
 	
