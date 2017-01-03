@@ -1,5 +1,7 @@
 import condense.*
 import grails.converters.JSON;
+import org.codehaus.groovy.grails.web.converters.configuration.ChainedConverterConfiguration
+import org.codehaus.groovy.grails.web.converters.configuration.DefaultConverterConfiguration
 
 class BootStrap {
 	
@@ -80,6 +82,9 @@ class BootStrap {
 			map['maxCharge'] = it.maxCharge
 			return map
 		}
+		
+		DefaultConverterConfiguration<JSON> cfg = (DefaultConverterConfiguration<JSON>)ConvertersConfigurationHolder.getConverterConfiguration(JSON)
+		ConvertersConfigurationHolder.setDefaultConfiguration(JSON.class, new ChainedConverterConfiguration<JSON>(cfg, cfg.proxyHandler));
     }
     def destroy = {
     }

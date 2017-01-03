@@ -16,14 +16,30 @@ class CspService {
 	def resellerId = null
 
     def getUsage(subscriptionId, startTime, endTime) {
-		def adAPIEndpoint = grailsApplication.config.csp.adAPIEndpoint
-		def defaultDomain = grailsApplication.config.csp.defaultDomain
+		def subscription = Subscription.findBySubscriptionId(subscriptionId)
+		def cspProperties = grailsApplication.config.getProperty('csp')
+		if (cspProperties == null || cspProperties.isEmpty()) {
+			print "empty"
+			throw new Exception("There are no csp section defined in condense-config.properties")
+		}
+		def tokenizedDomain = subscription.customer.cspDomain.tokenize('.')
+		def currentSection = "csp"
+		tokenizedDomain.each {
+			currentSection = currentSection + ".${it}"
+			cspProperties = cspProperties.getProperty(it)
+			if (cspProperties == null || cspProperties.isEmpty()) {
+				throw new Exception("There are no ${currentSection} section defined in condense-config.properties")
+			}
+		}
 		
-		def appId = grailsApplication.config.csp.appId
-		def appKey = grailsApplication.config.csp.appKey
-		def tenantId = grailsApplication.config.csp.tenantId
+		def adAPIEndpoint = cspProperties.getProperty("adAPIEndpoint")
+		def defaultDomain = cspProperties.getProperty("defaultDomain")
 		
-		def cspAPIEndpoint = grailsApplication.config.csp.cspAPIEndpoint
+		def appId = cspProperties.getProperty("appId")
+		def appKey = cspProperties.getProperty("appKey")
+		def tenantId = cspProperties.getProperty("tenantId")
+		
+		def cspAPIEndpoint = cspProperties.getProperty("cspAPIEndpoint")
 		
 		def corelationId = UUID.randomUUID().toString()
 		def trackingId = UUID.randomUUID().toString()
