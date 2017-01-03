@@ -101,6 +101,7 @@ class RestSubscriptionsController {
 		Subscription subscription = Subscription.findBySubscriptionId(params.id)
 		if(subscription == null) {
 			render status:404
+			return
 		}
 		if (request.JSON?.isActive != null) {
 			subscription.isActive = request.JSON?.isActive
