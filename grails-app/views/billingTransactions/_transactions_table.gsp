@@ -10,7 +10,7 @@
 									
 									<div class="row"><hr /></div>
 									
-									<g:each in="${subscriptionTransctions.billingPeriods}" var="billingPeriod">
+									<g:each in="${subscriptionTransctions?.billingPeriods}" var="billingPeriod">
 										<div class="row alert alert-info">
 											<div class="col-md-12">
 												<label><g:message code="transactions.calculated.in" default="Transactions calculated in" />: ${subscriptionTransctions.currency}</label>:

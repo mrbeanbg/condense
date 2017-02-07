@@ -28,11 +28,16 @@
 					<g:if test="${subscriptionInstance?.subscriptionId}">
 					<dl class="dl-horizontal">
 						<dt id="subscriptionId-label" class="property-label"><g:message code="subscription.subscriptionId.label" default="Subscription Id" /></dt>
-						
 							<dd class="property-value" aria-labelledby="subscriptionId-label"><g:fieldValue bean="${subscriptionInstance}" field="subscriptionId"/></dd>
-						
 					</dl>
 					</g:if>
+					
+					<dl class="dl-horizontal">
+						<dt id="subscriptionId-label" class="property-label"><g:message code="subscription.isActive.label" default="Is Active" /></dt>
+						
+							<dd class="property-value" aria-labelledby="subscriptionId-label"><g:fieldValue bean="${subscriptionInstance}" field="isActive"/></dd>
+						
+					</dl>
 				
 					<g:if test="${subscriptionInstance?.usageObtainedUntil}">
 					<dl class="dl-horizontal">

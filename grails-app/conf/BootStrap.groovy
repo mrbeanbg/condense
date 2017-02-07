@@ -82,6 +82,34 @@ class BootStrap {
 			return map
 		}
 		
+		JSON.registerObjectMarshaller(MonthlyBill) {
+			def map= [:]
+			map['id'] = it.id
+			map['month'] = it.month
+			map['year'] = it.year
+			map['billSubtotal'] = it.billSubtotal
+			map['billSupportCharges'] = it.billSupportCharges
+			map['billTotal'] = it.billTotal
+			map['monthlyTransactions'] = []
+			it.monthlyTransactions.each { monthlyTransaction->
+				map['monthlyTransactions'] << [
+					id: monthlyTransaction.id,
+					productInvoiceName: "${monthlyTransaction.productName} - ${monthlyTransaction.productCategory}${(monthlyTransaction.productSubcategory==null) ? '': '- ' + monthlyTransaction.productSubcategory}",
+					"productName": monthlyTransaction.productName,
+					"productResourceId": monthlyTransaction.productResourceId,
+					"productCategory": monthlyTransaction.productCategory,
+					"productSubcategory": monthlyTransaction.productSubcategory,
+					"productRegion": monthlyTransaction.productRegion,
+					"usage": monthlyTransaction.usage,
+					"included": monthlyTransaction.included,
+					"totalUsage": monthlyTransaction.totalUsage,
+					"price": monthlyTransaction.price,
+					"productSubtotal": monthlyTransaction.productSubtotal
+				]
+			}
+			return map
+		}
+		
 		DefaultConverterConfiguration<JSON> cfg = (DefaultConverterConfiguration<JSON>)ConvertersConfigurationHolder.getConverterConfiguration(JSON)
 		ConvertersConfigurationHolder.setDefaultConfiguration(JSON.class, new ChainedConverterConfiguration<JSON>(cfg, cfg.proxyHandler));
     }

@@ -15,7 +15,10 @@ class Subscription {
 	
 	static belongsTo = [customer: Customer]
 	
-	static hasMany = [usageRecords: UsageRecord]
+	static hasMany = [
+		usageRecords: UsageRecord,
+		monthlyBills: MonthlyBill
+	]
 	
     static constraints = {
 		subscriptionId blank:false, unique:true
@@ -37,9 +40,9 @@ class Subscription {
 	boolean equals(o) {
 		if (this.is(o)) return true
 		if (getClass() != o.class) return false
-		Subscription subsciption = (Subscription) o
-		if (id != null && id == subsciption.id) return true
-		if (subscriptionId != subsciption.subscriptionId) return false
+		Subscription subscription = (Subscription) o
+		if (id != null && id == subscription.id) return true
+		if (subscriptionId != subscription.subscriptionId) return false
 		return true
 	}
 	

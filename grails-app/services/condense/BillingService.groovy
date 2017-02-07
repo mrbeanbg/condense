@@ -1,5 +1,6 @@
 package condense
 
+import java.math.RoundingMode;
 import java.util.Date;
 
 import org.hibernate.criterion.CriteriaSpecification;
@@ -424,12 +425,12 @@ class BillingService {
 						category: currentProductDetailO.category,
 						subcategory: currentProductDetailO.subcategory,
 						region: currentProductDetailO.region,
-						subTotal: currentBillingPeriodO.subTotal * currencyRate,
+						subTotal: new BigDecimal(currentBillingPeriodO.subTotal * currencyRate).setScale(2, RoundingMode.HALF_UP),
 						totalUsage: currentBillingPeriodO.totalUsage,
 						usgeAndPricingDetails: effectivePeriods
 					]
-				currentBillingPeriod.billingPeriodSubtotal +=  currentBillingPeriodO.subTotal * currencyRate
-				currentBillingPeriod.billingPeriodTotal = currentBillingPeriod.billingPeriodSubtotal
+				currentBillingPeriod.billingPeriodSubtotal +=  new BigDecimal(currentBillingPeriodO.subTotal * currencyRate).setScale(2, RoundingMode.HALF_UP)
+				currentBillingPeriod.billingPeriodTotal =  currentBillingPeriod.billingPeriodSubtotal
 			}
 		}
 		
@@ -480,8 +481,8 @@ class BillingService {
 				theSupportCharges = maxSupportCharge
 			}
 			
-			billingPeriod.value.billintPeriodSupportCharges = theSupportCharges
-			billingPeriod.value.billingPeriodTotal = billingPeriod.value.billingPeriodSubtotal + billingPeriod.value.billintPeriodSupportCharges
+			billingPeriod.value.billintPeriodSupportCharges = new BigDecimal(theSupportCharges).setScale(2, RoundingMode.HALF_UP)
+			billingPeriod.value.billingPeriodTotal = new BigDecimal(billingPeriod.value.billingPeriodSubtotal + billingPeriod.value.billintPeriodSupportCharges).setScale(2, RoundingMode.HALF_UP)
 		}
 		
 		return [billingPeriods: billingPeriods.values(), currency: currencyAbbreviation]
