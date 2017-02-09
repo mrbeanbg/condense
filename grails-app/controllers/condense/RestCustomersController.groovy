@@ -15,7 +15,6 @@ class RestCustomersController {
 	}
 	
 	def show() {
-		print params
 		def customerId = (params.format != null) ? "${params.id}.${params.format}" : params.id
 		def customer = Customer.findByCspCustomerId(customerId)
 		

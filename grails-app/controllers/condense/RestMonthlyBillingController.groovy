@@ -1,17 +1,18 @@
 package condense
-import java.math.BigDecimal;
 import java.util.Date;
 
 import grails.converters.*
 import grails.plugin.springsecurity.annotation.Secured;
+import grails.transaction.Transactional;
 
 @Secured(['permitAll'])
+@Transactional(readOnly = true)
 class RestMonthlyBillingController {
 
 	BillingService billingService
 	
+	@Transactional
     def index() {
-		print params
 		def subscription = Subscription.findBySubscriptionId(params.restSubscriptionsId)
 		if (subscription == null) {
 			render status: 404
@@ -19,9 +20,6 @@ class RestMonthlyBillingController {
 		}
 		def forMonth = Integer.parseInt(params.month)
 		def forYear = Integer.parseInt(params.year)
-		
-		print forMonth
-		
 		
 		if (!forYear || !forMonth) {
 			render status: 404, text: "The month and year parameters are required."
@@ -45,9 +43,6 @@ class RestMonthlyBillingController {
 		def toDate = c.getTime()
 		c.add(Calendar.DATE, 5)
 		def safeToObtainDate = c.getTime()
-		
-		print safeToObtainDate
-		print new Date()
 		
 		if (new Date() < safeToObtainDate) {
 			render status: 409, text: "Too early to obtain billing for the requested month"
@@ -111,6 +106,6 @@ class RestMonthlyBillingController {
 			}
 		}
 		
-		render monthlyBill as JSON
+		respond monthlyBill as JSON
 	}
 }

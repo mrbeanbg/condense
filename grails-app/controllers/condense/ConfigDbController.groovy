@@ -6,91 +6,52 @@ import static org.springframework.http.HttpStatus.*
 import grails.transaction.Transactional
 import grails.plugin.springsecurity.annotation.Secured;
 
-@Secured(['ROLE_MANAGER', 'ROLE_ADMIN'])
+@Secured(['ROLE_ADMIN'])
 @Transactional(readOnly = true)
 class ConfigDbController {
 
     static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
 
-    def index(Integer max) {
-        params.max = Math.min(max ?: 10, 100)
-        respond ConfigDb.list(params), model:[configDbInstanceCount: ConfigDb.count()]
-    }
-
-    def show(ConfigDb configDbInstance) {
-        respond configDbInstance
-    }
-
-    def create() {
-        respond new ConfigDb(params)
-    }
-
-    @Transactional
-    def save(ConfigDb configDbInstance) {
-        if (configDbInstance == null) {
-            notFound()
-            return
-        }
-
-        if (configDbInstance.hasErrors()) {
-            respond configDbInstance.errors, view:'create'
-            return
-        }
-
-        configDbInstance.save flush:true
-
-        request.withFormat {
-            form multipartForm {
-                flash.message = message(code: 'default.created.message', args: [message(code: 'configDb.label', default: 'ConfigDb'), configDbInstance.id])
-                redirect configDbInstance
-            }
-            '*' { respond configDbInstance, [status: CREATED] }
-        }
-    }
-
     def edit(ConfigDb configDbInstance) {
-        respond configDbInstance
+		def currentDefaultPricingSet = ConfigDb.findByFieldKey("defaultPricingSet")
+		print currentDefaultPricingSet
+		def currentdefaultSupportPlan = ConfigDb.findByFieldKey("defaultSupportPlan")
+        respond currentDefaultPricingSet, [model:[currentDefaultPricingSet: currentDefaultPricingSet,
+			currentdefaultSupportPlan: currentdefaultSupportPlan]]
     }
 
     @Transactional
-    def update(ConfigDb configDbInstance) {
-        if (configDbInstance == null) {
-            notFound()
+    def update() {
+		def currentDefaultPricingSetVal = params.currentDefaultPricingSet.fieldVal
+		def currentdefaultSupportPlanVal = params.currentdefaultSupportPlan.fieldVal
+		
+		def currentDefaultPricingSet = ConfigDb.findByFieldKey("defaultPricingSet")
+		def currentdefaultSupportPlan = ConfigDb.findByFieldKey("defaultSupportPlan")
+		
+		currentDefaultPricingSet.fieldVal = currentDefaultPricingSetVal
+		currentdefaultSupportPlan.fieldVal = currentdefaultSupportPlanVal
+
+        if (currentDefaultPricingSet.hasErrors()) {
+            respond currentDefaultPricingSet.errors, view:'edit'
             return
         }
 
-        if (configDbInstance.hasErrors()) {
-            respond configDbInstance.errors, view:'edit'
-            return
-        }
+        currentDefaultPricingSet.save flush:true
+		
+		
+		if (currentdefaultSupportPlan.hasErrors()) {
+			respond currentdefaultSupportPlan.errors, view:'edit'
+			return
+		}
 
-        configDbInstance.save flush:true
+		currentdefaultSupportPlan.save flush:true
 
         request.withFormat {
             form multipartForm {
-                flash.message = message(code: 'default.updated.message', args: [message(code: 'ConfigDb.label', default: 'ConfigDb'), configDbInstance.id])
-                redirect configDbInstance
+                flash.message = message(code: 'default.settings.successfully.updated', default: 'Successfully updated!')
+                redirect action: 'edit'
             }
-            '*'{ respond configDbInstance, [status: OK] }
-        }
-    }
-
-    @Transactional
-    def delete(ConfigDb configDbInstance) {
-
-        if (configDbInstance == null) {
-            notFound()
-            return
-        }
-
-        configDbInstance.delete flush:true
-
-        request.withFormat {
-            form multipartForm {
-                flash.message = message(code: 'default.deleted.message', args: [message(code: 'ConfigDb.label', default: 'ConfigDb'), configDbInstance.id])
-                redirect action:"index", method:"GET"
-            }
-            '*'{ render status: NO_CONTENT }
+            '*'{ respond configDbInstance, view: 'edit', [status: OK] }
         }
     }
 

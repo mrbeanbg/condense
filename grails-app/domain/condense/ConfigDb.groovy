@@ -12,11 +12,11 @@ class ConfigDb {
 
     static constraints = {
 		fieldKey blank: false, unique: true
-		fieldVal blank: false
+		fieldVal nullable: true
     }
 	
 	public String toString() {
-		return "${fieldKey}:${fieldVal}";
+		return "${fieldKey}:${fieldVal?:''}";
 	}
 	
 	boolean equals(o) {

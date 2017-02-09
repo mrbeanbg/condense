@@ -3,7 +3,7 @@
 <html>
 	<head>
 		<meta name="layout" content="main">
-		<g:set var="entityName" value="${message(code: 'configDb.label', default: 'ConfigDb')}" />
+		<g:set var="entityName" value="${message(code: 'configSettings.label', default: 'Config Settings')}" />
 		<title><g:message code="default.edit.label" args="[entityName]" /></title>
 	</head>
 	<body>
@@ -11,8 +11,6 @@
 			<div class="nav" role="navigation">
 				<ul class="nav nav-pills">
 					<li class="active"><a class="home" href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></li>
-					<li><g:link class="list" action="index"><g:message code="default.list.label" args="[entityName]" /></g:link></li>
-					<li><g:link class="create" action="create"><g:message code="default.new.label" args="[entityName]" /></g:link></li>
 				</ul>
 			</div>
 			<div id="edit-configDb" class="content scaffold-edit" role="main">
@@ -23,17 +21,25 @@
 				<g:if test="${flash.error}">
 				<div class="alert alert-danger" role="status">${flash.error}</div>
 				</g:if>
-				<g:hasErrors bean="${configDbInstance}">
+				<g:hasErrors bean="${currentDefaultPricingSet}">
 				<div class="alert alert-danger">
 					<ul class="errors" role="alert">
-						<g:eachError bean="${configDbInstance}" var="error">
+						<g:eachError bean="${currentDefaultPricingSet}" var="error">
 						<li <g:if test="${error in org.springframework.validation.FieldError}">data-field-id="${error.field}"</g:if>><g:message error="${error}"/></li>
 						</g:eachError>
 					</ul>
 				</div>
 				</g:hasErrors>
-				<g:form url="[resource:configDbInstance, action:'update']" class="form-horizontal" method="PUT" >
-					<g:hiddenField name="version" value="${configDbInstance?.version}" />
+				<g:hasErrors bean="${currentdefaultSupportPlan}">
+				<div class="alert alert-danger">
+					<ul class="errors" role="alert">
+						<g:eachError bean="${currentdefaultSupportPlan}" var="error">
+						<li <g:if test="${error in org.springframework.validation.FieldError}">data-field-id="${error.field}"</g:if>><g:message error="${error}"/></li>
+						</g:eachError>
+					</ul>
+				</div>
+				</g:hasErrors>
+				<g:form url="[controller:'configDb', action:'update']" class="form-horizontal" method="PUT" >
 					<fieldset class="form">
 						<g:render template="form"/>
 					</fieldset>

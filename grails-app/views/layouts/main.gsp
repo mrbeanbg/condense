@@ -56,8 +56,9 @@
 							<sec:ifLoggedIn>
 							<li class="dropdown">
 								<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-									<g:message code="topnav.user.management" default="User Management"/><span class="caret"></span></a>
+									<g:message code="topnav.admin" default="Admin"/><span class="caret"></span></a>
 								<ul class="dropdown-menu" role="menu">
+									<li><g:link controller="configDb" action="edit"><g:message code="topnav.Settings" default="Settings"/></g:link></li>
 									<li><g:link controller="user" action="index"><g:message code="topnav.Users" default="Users"/></g:link></li>
 								</ul>
 							</li>
