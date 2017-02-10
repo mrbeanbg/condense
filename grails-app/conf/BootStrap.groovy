@@ -39,16 +39,16 @@ class BootStrap {
 									.save(failOnError: true)
 			
 			assert User.count() == 3
-		}
-		
-		if (!userAdmin.authorities.contains(userRoleAdmin)) {
-			UserRole.create(userAdmin, userRoleAdmin, true)
-		}
-		if (!userManager.authorities.contains(userRoleManager)) {
-			UserRole.create(userManager, userRoleManager, true)
-		}
-		if (!userApi.authorities.contains(userRoleApi)) {
-			UserRole.create(userApi, userRoleApi, true)
+			
+			if (!userAdmin.authorities.contains(userRoleAdmin)) {
+				UserRole.create(userAdmin, userRoleAdmin, true)
+			}
+			if (!userManager.authorities.contains(userRoleManager)) {
+				UserRole.create(userManager, userRoleManager, true)
+			}
+			if (!userApi.authorities.contains(userRoleApi)) {
+				UserRole.create(userApi, userRoleApi, true)
+			}
 		}
 		
 		if (ConfigDb.count() == 0) {
@@ -101,7 +101,7 @@ class BootStrap {
 					"productCategory": monthlyTransaction.productCategory,
 					"productSubcategory": monthlyTransaction.productSubcategory,
 					"productRegion": monthlyTransaction.productRegion,
-					"usage": monthlyTransaction.usage,
+					"productUsage": monthlyTransaction.productUsage,
 					"included": monthlyTransaction.included,
 					"totalUsage": monthlyTransaction.totalUsage,
 					"price": monthlyTransaction.price,

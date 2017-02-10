@@ -8,6 +8,7 @@ import grails.transaction.Transactional;
 @Secured(['permitAll'])
 @Transactional(readOnly = true)
 class RestMonthlyBillingController {
+	static responseFormats = ['json']
 
 	BillingService billingService
 	
@@ -18,11 +19,17 @@ class RestMonthlyBillingController {
 			render status: 404
 			return
 		}
+		
+		if (params.month == null || params.year == null) {
+			render status: 400, text: "The month and year parameters are required."
+			return
+		}
+		
 		def forMonth = Integer.parseInt(params.month)
 		def forYear = Integer.parseInt(params.year)
 		
 		if (!forYear || !forMonth) {
-			render status: 404, text: "The month and year parameters are required."
+			render status: 400, text: "The month and year parameters are required."
 			return
 		}
 		
@@ -87,7 +94,7 @@ class RestMonthlyBillingController {
 							productCategory: it.category,
 							productSubcategory: it.subcategory,
 							productRegion: it.region,
-							usage: it.usgeAndPricingDetails[0].usage,
+							productUsage: it.usgeAndPricingDetails[0].usage,
 							included: it.usgeAndPricingDetails[0].included,
 							totalUsage: it.totalUsage,
 							price: it.usgeAndPricingDetails[0].price,
@@ -106,6 +113,6 @@ class RestMonthlyBillingController {
 			}
 		}
 		
-		respond monthlyBill as JSON
+		respond monthlyBill
 	}
 }
