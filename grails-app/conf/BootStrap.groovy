@@ -91,18 +91,19 @@ class BootStrap {
 			map['billSubtotal'] = it.billSubtotal
 			map['billSupportCharges'] = it.billSupportCharges
 			map['billTotal'] = it.billTotal
+			map['currency'] = it.currency
 			map['monthlyTransactions'] = []
 			it.monthlyTransactions.each { monthlyTransaction->
 				map['monthlyTransactions'] << [
 					id: monthlyTransaction.id,
 					productInvoiceName: "${monthlyTransaction.productName} - ${monthlyTransaction.productCategory}${(monthlyTransaction.productSubcategory==null) ? '': '- ' + monthlyTransaction.productSubcategory}",
-					"productName": monthlyTransaction.productName,
-					"productResourceId": monthlyTransaction.productResourceId,
-					"productCategory": monthlyTransaction.productCategory,
-					"productSubcategory": monthlyTransaction.productSubcategory,
-					"productRegion": monthlyTransaction.productRegion,
-					"productUsage": monthlyTransaction.productUsage,
-					"included": monthlyTransaction.included,
+					productName: monthlyTransaction.productName,
+					productResourceId: monthlyTransaction.productResourceId,
+					productCategory: monthlyTransaction.productCategory,
+					productSubcategory: monthlyTransaction.productSubcategory,
+					productRegion: monthlyTransaction.productRegion,
+					productUsage: monthlyTransaction.productUsage,
+					included: monthlyTransaction.included,
 					"totalUsage": monthlyTransaction.totalUsage,
 					"price": monthlyTransaction.price,
 					"productSubtotal": monthlyTransaction.productSubtotal
