@@ -112,7 +112,7 @@ log4j.main = {
 		appender new DailyRollingFileAppender(
 				name: 'usageJobLog',
 				datePattern: "'.'yyyy-MM-dd",
-				fileName: "${userHome}/logs/${appName}.log",
+				fileName: "${userHome}/${appName}.log",
 				layout: pattern(conversionPattern: '%d [%t] %-5p %c{2} %x - %m%n')
 		)
 	}

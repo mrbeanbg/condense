@@ -35,7 +35,7 @@ environments {
 			dialect = "org.hibernate.dialect.MySQL5InnoDBDialect"
             url = "jdbc:mysql://localhost/condense?useUnicode=yes&characterEncoding=UTF-8"
             username = "condense"
-            password = "rSVVRLq6tClEcNjW"
+            password = ""
 			properties {
 				jmxEnabled = true
 				initialSize = 5
