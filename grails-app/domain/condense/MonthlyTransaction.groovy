@@ -9,7 +9,7 @@ class MonthlyTransaction {
 	String productCategory
 	String productSubcategory
 	String productRegion
-	BigDecimal usage
+	BigDecimal productUsage
 	Long included
 	BigDecimal totalUsage
 	BigDecimal price
@@ -27,7 +27,7 @@ class MonthlyTransaction {
 		productCategory blank: false
 		productSubcategory nullable: true
 		productRegion blank: false
-		usage scale: 15, max: 99999999999999999999.999999999999999
+		productUsage scale: 15, max: 99999999999999999999.999999999999999
 		included()
 		totalUsage scale: 15, max: 99999999999999999999.999999999999999
 		price scale: 15, max: 99999999999999999999.999999999999999

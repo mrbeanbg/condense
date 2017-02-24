@@ -42,7 +42,7 @@ class RestCustomersController {
 		if (pricingSetId == null) {
 			// TODO: obtain the default values PricingSet
 			pricingSetId = configService.getValue("defaultPricingSet")
-			if (pricingSetId == null) {
+			if (pricingSetId == null || pricingSetId == 'null') {
 				render status: 400, text: "pricingSetId is required"
 				return
 			}
@@ -83,7 +83,7 @@ class RestCustomersController {
 			//TODO: obtain the default Support Plan
 			supportPlanId = configService.getValue("defaultSupportPlan")
 		}
-		if (supportPlanId != null) {
+		if (supportPlanId != null && supportPlanId != 'null') {
 			supportPlan = SupportPlan.find{id == supportPlanId}
 			if (supportPlan == null) {
 				render status: 400, text: "Invalid support plan ID"
