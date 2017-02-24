@@ -51,8 +51,6 @@ class BootStrap {
 			}
 		}
 		
-		
-		
 		if (ConfigDb.count() == 0) {
 			new ConfigDb(fieldKey: "defaultPricingSet", fieldVal: null).save(failOnError: true)
 			new ConfigDb(fieldKey: "defaultSupportPlan", fieldVal: null).save(failOnError: true)

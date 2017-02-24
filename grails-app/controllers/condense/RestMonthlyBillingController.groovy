@@ -29,7 +29,7 @@ class RestMonthlyBillingController {
 		def forYear = Integer.parseInt(params.year)
 		
 		if (!forYear || !forMonth) {
-			render status: 404, text: "The month and year parameters are required."
+			render status: 400, text: "The month and year parameters are required."
 			return
 		}
 		
