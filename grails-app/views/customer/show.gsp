@@ -26,6 +26,15 @@
 				</g:if>
 				<ul class="property-list customer">
 				
+					<g:if test="${customerInstance?.cspCustomerPrimaryDomain}">
+					<dl class="dl-horizontal">
+						<dt id="cspCustomerPrimaryDomain-label" class="property-label"><g:message code="customer.cspCustomerPrimaryDomain.label" default="CSP Customer Primary Domain" /></dt>
+						
+							<dd class="property-value" aria-labelledby="cspCustomerPrimaryDomain-label"><g:fieldValue bean="${customerInstance}" field="cspCustomerPrimaryDomain"/></dd>
+						
+					</dl>
+					</g:if>
+				
 					<g:if test="${customerInstance?.cspCustomerId}">
 					<dl class="dl-horizontal">
 						<dt id="cspCustomerId-label" class="property-label"><g:message code="customer.cspCustomerId.label" default="Csp Customer Id" /></dt>

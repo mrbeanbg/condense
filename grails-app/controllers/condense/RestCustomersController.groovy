@@ -60,12 +60,20 @@ class RestCustomersController {
 			return
 		}
 		
+		def cspCustomerPrimaryDomain = request.JSON?.cspCustomerPrimaryDomain
+		if (cspCustomerPrimaryDomain == null) {
+			render status: 400, text: "cspCustomerPrimaryDomain is required"
+			return
+		}
+		
 		def newCspCustomerId = request.JSON?.cspCustomerId
 		if (newCspCustomerId == null) {
 			render status: 400, text: "cspCustomerId is required"
 			return
 
-		} else if (Customer.findByCspCustomerId(newCspCustomerId) != null) {
+		}
+		
+		if (Customer.findByCspCustomerId(newCspCustomerId) != null) {
 			render status: 409, text: "CSP customer ${newCspCustomerId} already exists"
 			return
 		}
@@ -92,6 +100,7 @@ class RestCustomersController {
 		}
 		
 		def customer = new Customer(
+			cspCustomerPrimaryDomain: cspCustomerPrimaryDomain,
 			cspCustomerId: newCspCustomerId,
 			cspDomain: cspDomain,
 			externalId: externalId,
@@ -113,6 +122,11 @@ class RestCustomersController {
 		Customer customer = Customer.findByCspCustomerId(params.id)
 		if(customer == null) {
 			render status:404
+		}
+		
+		def cspCustomerPrimaryDomain = request.JSON?.cspCustomerPrimaryDomain
+		if (cspCustomerPrimaryDomain != null) {
+			customer.cspCustomerPrimaryDomain = cspCustomerPrimaryDomain
 		}
 		
 		def cspDomain = request.JSON?.cspDomain

@@ -4,9 +4,11 @@ package condense
 
 import static org.springframework.http.HttpStatus.*
 import grails.transaction.Transactional
+
 import java.text.DateFormat
 import java.text.DecimalFormat
 import java.text.SimpleDateFormat
+
 import grails.plugin.springsecurity.annotation.Secured;
 
 @Secured(['ROLE_MANAGER', 'ROLE_ADMIN'])
@@ -14,6 +16,7 @@ import grails.plugin.springsecurity.annotation.Secured;
 class SubscriptionController {
 	
 	def cspService
+	def partnerCenterService
 
     static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
 
@@ -136,15 +139,15 @@ class SubscriptionController {
 		print startDate
 		print endDate
 		
-		def startTimeStr = startDate.format("yyyy-MM-dd") + " 00:00:00Z"
-		def endTimeStr = endDate.format("yyyy-MM-dd") + " 00:00:00Z"
+		def startTimeStr = startDate.format("yyyy-MM-dd") + "T00:00:00Z"
+		def endTimeStr = endDate.format("yyyy-MM-dd") + "T00:00:00Z"
 		
 		print startTimeStr
 		print endTimeStr
 		
 		def usages = []
 		try {
-			usages = cspService.getUsage(subscriptionInstance.subscriptionId, startTimeStr, endTimeStr)
+			usages = partnerCenterService.getUsage(subscriptionInstance.customer.cspCustomerId, subscriptionInstance.subscriptionId, startTimeStr, endTimeStr)
 		} catch (Exception ex) {
 			subscriptionInstance.errors.reject("either.one.of.the.dates.is.not.defined.error", [subscriptionInstance.subscriptionId, ex.getMessage()] as Object[], "Unable to obtain usage for subscription:{0}. Additional error message: {1}")
 			respond subscriptionInstance,
@@ -156,20 +159,20 @@ class SubscriptionController {
 		print usages
 		
 		for (usage in usages) {
-			DateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-			def recordStartTime = format.parse(usage['usage_start_time'])
-			def recordEndTime = format.parse(usage['usage_end_time'])
+			DateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
+			def recordStartTime = format.parse(usage['usageStartTime'])
+			def recordEndTime = format.parse(usage['usageEndTime'])
 			
 			new UsageRecord(
-				meteredId: usage['meter_id'],
+				meteredId: usage['resource']['id'],
 				startTime: recordStartTime,
 				endTime: recordEndTime,
 				quantity: new BigDecimal(new DecimalFormat("0.######E0").format(usage['quantity'])),
 				unit: usage['unit'],
-				category: usage['meter_category'],
-				subcategory: (usage.containsKey("meter_sub_category") ? usage['meter_sub_category'] : null),
-				region: usage['meter_region'],
-				name: usage['meter_name'],
+				category: usage['resource']['category'],
+				subcategory: (usage['resource'].containsKey("subcategory") ? usage['resource']['subcategory'] : null),
+				region: usage['resource']['region'],
+				name: usage['resource']['name'],
 				subscription: subscriptionInstance).save(flush: true)
 		}
 		

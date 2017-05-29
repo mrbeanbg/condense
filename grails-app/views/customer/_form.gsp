@@ -2,6 +2,15 @@
 
 
 
+<div class="form-group fieldcontain ${hasErrors(bean: customerInstance, field: 'cspCustomerPrimaryDomain', 'error')} required">
+	<label class="control-label col-md-2" for="cspCustomerPrimaryDomain">
+		<g:message code="customer.cspCustomerPrimaryDomain.label" default="CSP Customer Primary Domain" />
+		<span class="required-indicator">*</span>
+	</label>
+	<span class="controls col-md-10">
+		<g:textField name="cspCustomerPrimaryDomain" required="" value="${customerInstance?.cspCustomerPrimaryDomain}"/>
+	</span>
+</div>
 <div class="form-group fieldcontain ${hasErrors(bean: customerInstance, field: 'cspCustomerId', 'error')} required">
 	<label class="control-label col-md-2" for="cspCustomerId">
 		<g:message code="customer.cspCustomerId.label" default="CSP Customer Id" />

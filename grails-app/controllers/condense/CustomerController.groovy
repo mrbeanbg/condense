@@ -43,7 +43,7 @@ class CustomerController {
 			return
 		}
 		
-		if ((session['detailRows'] != null || !session['detailRows'].empty) &&
+		if ((session['detailRows'] != null && !session['detailRows'].empty) &&
 			session['detailRows'].find { it.subscriptionId == subscriptionId }) {
 			recordToValidate.errors.reject("Already existing subscritption Id", "Already existing subscritption Id")
 			respond(recordToValidate.errors,

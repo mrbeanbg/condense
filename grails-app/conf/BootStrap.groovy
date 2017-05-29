@@ -60,6 +60,7 @@ class BootStrap {
 		
 		JSON.registerObjectMarshaller(Customer) {
 			def map= [:]
+			map['cspCustomerPrimaryDomain'] = it.cspCustomerPrimaryDomain
 			map['cspCustomerId'] = it.cspCustomerId
 			map['cspDomain'] = it.cspDomain
 			map['externalId'] = it.externalId
@@ -114,6 +115,7 @@ class BootStrap {
 			return map
 		}
 		
+		// Fixing marshaling issue http://grails.1312388.n4.nabble.com/Marshallers-are-blowing-up-in-2-3-5-anyone-else-td4653954.html
 		DefaultConverterConfiguration<JSON> cfg = (DefaultConverterConfiguration<JSON>)ConvertersConfigurationHolder.getConverterConfiguration(JSON)
 		ConvertersConfigurationHolder.setDefaultConfiguration(JSON.class, new ChainedConverterConfiguration<JSON>(cfg, cfg.proxyHandler));
     }

@@ -26,6 +26,7 @@
 				<table class="table table-striped table-bordered table-hover">
 				<thead>
 						<tr>
+							<g:sortableColumn property="cspCustomerPrimaryDomain" title="${message(code: 'customer.cspCustomerPrimaryDomain.label', default: 'CSP Customer Primary Domain')}" />
 						
 							<g:sortableColumn property="cspCustomerId" title="${message(code: 'customer.cspCustomerId.label', default: 'Csp Customer Id')}" />
 							
@@ -47,7 +48,9 @@
 					<g:each in="${customerInstanceList}" status="i" var="customerInstance">
 						<tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
 						
-							<td><g:link action="show" id="${customerInstance.id}">${fieldValue(bean: customerInstance, field: "cspCustomerId")}</g:link></td>
+						    <td><g:link action="show" id="${customerInstance.id}">${fieldValue(bean: customerInstance, field: "cspCustomerPrimaryDomain")}</g:link></td>
+						
+							<td>${fieldValue(bean: customerInstance, field: "cspCustomerId")}</td>
 							
 							<td>${fieldValue(bean: customerInstance, field: "cspDomain")}</td>
 							

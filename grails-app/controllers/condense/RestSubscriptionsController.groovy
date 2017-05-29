@@ -21,7 +21,9 @@ class RestSubscriptionsController {
 			render status: 404
 			return
 		}
-		respond Subscription.createCriteria().list {eq("customer.id", cspCustomer.id)}
+		respond Subscription.createCriteria().list {
+			eq("customer.id", cspCustomer.id)
+		}
 	}
 	
 	def show() {

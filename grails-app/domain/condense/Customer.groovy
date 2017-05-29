@@ -1,10 +1,14 @@
 package condense
 
 import java.util.Date;
-
 import condense.ProductOverride.OverrideType;
+import java.io.Serializable;
 
-class Customer {
+class Customer implements Serializable {
+	
+	private static final long serialVersionUID = 1
+	
+	String cspCustomerPrimaryDomain
 	String cspCustomerId
 	String cspDomain
 	String externalId
@@ -20,6 +24,7 @@ class Customer {
 	]
 	
     static constraints = {
+		cspCustomerPrimaryDomain blank: false, unique: true
 		cspCustomerId blank: false, unique: true
 		cspDomain()
 		externalId()

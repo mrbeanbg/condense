@@ -11,7 +11,7 @@ import grails.plugin.springsecurity.annotation.Secured;
 class ProbaController {
 	PricingBookService pricingBookService
 	BillingService billingService
-	CspService cspService
+	PartnerCenterService partnerCenterService
 
 	def index() {
 //		def dateFormat = new SimpleDateFormat("yyyy-MM-dd")
@@ -21,7 +21,8 @@ class ProbaController {
 		//testPricingBook()
 		//testBillingPeriodsChunks()
 		//geteffectivePricingPeriods()
-		manualImportUsage()
+		//manualImportUsage()
+		get_usage()
 	}
 	
 	@Transactional
@@ -138,7 +139,7 @@ class ProbaController {
 		def subscriptions = Subscription.list()
 		def usages = [:]
 		for (def i=0; i<subscriptions.size(); i++) {
-			usages << ["${subscriptions.get(i).subscriptionId}": cspService.getUsage(subscriptions.get(i).subscriptionId, "2016-09-23 00:00:00Z", "2016-09-24 00:00:00Z")]
+			usages << ["${subscriptions.get(i).subscriptionId}": partnerCenterService.getUsage(subscriptions.get(i).subscriptionId, "2017-05-10T00:00:00Z", "2017-05-11T00:00:00Z")]
 		}
 		
 		render usages

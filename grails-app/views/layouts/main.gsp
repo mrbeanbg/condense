@@ -74,7 +74,9 @@
 			</div>
 		</div>
 		<g:layoutBody/>
-		<div class="footer" role="contentinfo"></div>
+		<div class="footer" role="contentinfo">
+			<center>hostname: ${InetAddress.getLocalHost().getHostName()}</center>
+		</div>
 		<div id="spinner" class="spinner" style="display:none;"><g:message code="spinner.alt" default="Loading&hellip;"/></div>
 		<asset:deferredScripts/>
 	</body>
