@@ -1,8 +1,11 @@
 package condense
 
+import java.io.Serializable;
 import java.util.Date;
 
-class Product {
+class Product implements Serializable {
+	
+	private static final long serialVersionUID = 1
 	
 	String name
 	String guid

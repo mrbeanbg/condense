@@ -105,6 +105,7 @@ class BootStrap {
 					productCategory: monthlyTransaction.productCategory,
 					productSubcategory: monthlyTransaction.productSubcategory,
 					productRegion: monthlyTransaction.productRegion,
+					productUnit: monthlyTransaction.productUnit,
 					productUsage: monthlyTransaction.productUsage,
 					included: monthlyTransaction.included,
 					totalUsage: monthlyTransaction.totalUsage,

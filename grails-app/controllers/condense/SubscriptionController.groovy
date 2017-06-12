@@ -155,9 +155,7 @@ class SubscriptionController {
 				view: "obtain_usage"
 			return
 		}
-		
-		print usages
-		
+						
 		for (usage in usages) {
 			DateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
 			def recordStartTime = format.parse(usage['usageStartTime'])

@@ -1,8 +1,12 @@
 package condense
 
+import java.io.Serializable;
 import java.util.Date;
 
-class MonthlyBill {
+class MonthlyBill implements Serializable {
+	
+	private static final long serialVersionUID = 1
+	
 	Long month
 	Long year
 	String currency

@@ -2,7 +2,9 @@ package condense
 
 import java.util.Date;
 
-class Category {
+class Category implements Serializable {
+	
+	private static final long serialVersionUID = 1
 	
 	String name
 	

@@ -47,6 +47,7 @@
 																<g:message code="product.category" default="Category"/>: ${p.category}<br />
 																<g:message code="product.subcategory" default="Subcategory"/>: ${p.subcategory}<br />
 																<g:message code="product.region" default="Region"/>: ${p.region}<br />
+																<g:message code="product.unit" default="Unit"/>: ${p.unit}<br />
 															</td>
 															<td>${p.totalUsage}</td>
 															<td>

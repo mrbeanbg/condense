@@ -139,7 +139,7 @@ class ProbaController {
 		def subscriptions = Subscription.list()
 		def usages = [:]
 		for (def i=0; i<subscriptions.size(); i++) {
-			usages << ["${subscriptions.get(i).subscriptionId}": partnerCenterService.getUsage(subscriptions.get(i).subscriptionId, "2017-05-10T00:00:00Z", "2017-05-11T00:00:00Z")]
+			usages << ["${subscriptions.get(i).subscriptionId}": partnerCenterService.getUsage(subscriptions.get(i).customer.cspCustomerPrimaryDomain, subscriptions.get(i).subscriptionId, "2017-05-10T00:00:00Z", "2017-05-11T00:00:00Z")]
 		}
 		
 		render usages

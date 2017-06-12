@@ -1,10 +1,13 @@
 package condense
 
+import java.io.Serializable;
 import java.text.SimpleDateFormat
 import java.util.Date;
 
-class PricingBook {
+class PricingBook implements Serializable {
 	
+	private static final long serialVersionUID = 1
+		
 	Date fromDate
 	
 	/* Automatic timestamping of GORM */

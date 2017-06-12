@@ -1,8 +1,11 @@
 package condense
 
+import java.io.Serializable;
 import java.util.Date;
 
-class Subscription {
+class Subscription implements Serializable {
+	
+	private static final long serialVersionUID = 1
 	
 	String subscriptionId
 	Date usageObtainedUntil

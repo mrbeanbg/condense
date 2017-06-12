@@ -1,10 +1,13 @@
 package condense
 
+import java.io.Serializable;
 import java.util.Date;
 
 import condense.SupportTier.TierType;
 
-class ProductOverride {
+class ProductOverride implements Serializable {
+	
+	private static final long serialVersionUID = 1
 	
 	Long includedQuantity
 	Long startQuantity

@@ -1,14 +1,19 @@
 package condense
 
+import java.io.Serializable;
 import java.util.Date;
 
-class MonthlyTransaction {
+class MonthlyTransaction implements Serializable {
+	
+	private static final long serialVersionUID = 1
+	
 	String id = UUID.randomUUID().toString()
 	String productName
 	String productResourceId
 	String productCategory
 	String productSubcategory
 	String productRegion
+	String productUnit
 	BigDecimal productUsage
 	Long included
 	BigDecimal totalUsage
@@ -27,6 +32,7 @@ class MonthlyTransaction {
 		productCategory blank: false
 		productSubcategory nullable: true
 		productRegion blank: false
+		productUnit blank: false
 		productUsage scale: 15, max: 99999999999999999999.999999999999999
 		included()
 		totalUsage scale: 15, max: 99999999999999999999.999999999999999

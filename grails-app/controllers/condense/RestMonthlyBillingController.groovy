@@ -48,7 +48,7 @@ class RestMonthlyBillingController {
 		def fromDate = c.getTime()
 		c.add(Calendar.MONTH, 1)
 		def toDate = c.getTime()
-		c.add(Calendar.DATE, 5)
+		c.add(Calendar.DATE, 4)
 		def safeToObtainDate = c.getTime()
 		
 		if (new Date() < safeToObtainDate) {
@@ -94,6 +94,7 @@ class RestMonthlyBillingController {
 							productCategory: it.category,
 							productSubcategory: it.subcategory,
 							productRegion: it.region,
+							productUnit: it.unit,
 							productUsage: it.usgeAndPricingDetails[0].usage,
 							included: it.usgeAndPricingDetails[0].included,
 							totalUsage: it.totalUsage,

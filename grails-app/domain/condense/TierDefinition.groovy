@@ -1,8 +1,11 @@
 package condense
 
+import java.io.Serializable;
 import java.util.Date;
 
-class TierDefinition {
+class TierDefinition implements Serializable {
+	
+	private static final long serialVersionUID = 1
 
 	Long startQuantity
 	Long includedQuantity

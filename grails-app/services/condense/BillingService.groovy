@@ -278,6 +278,20 @@ class BillingService {
 		return totalUsage == null ? 0 : totalUsage
 	}
 	
+	def getProductUnit(Long subscriptionId, Product product, Date fromDate, Date toDate) {
+		def firstUsage = UsageRecord.createCriteria().list {
+			and {
+				maxResults (1)
+				eq ("subscription.id", subscriptionId)
+				eq ("meteredId", product.guid)
+				ge ("startTime", fromDate)
+				lt ("startTime", toDate)
+			}
+		}
+		
+		return firstUsage[0].unit
+	}
+	
 	def getProductTransactions(PricingSet pricingSet, Long subscriptionId, Product product, List billingPeriods, List effectivePeriods, Integer billingPeriodDays = null) {
 		if (billingPeriods.size() == 0) {
 			return []
@@ -300,25 +314,27 @@ class BillingService {
 			
 			billingEffectivePeriods.each {
 				def usage = getProductUsage(subscriptionId, product, it.fromDate, it.toDate)
+				
+				if (usage > 0) {
+					def effectivePrice = getEffectivePrice(it.pricingBook, pricingSet, product.guid, totalUsage)
 					
-				def effectivePrice = getEffectivePrice(it.pricingBook, pricingSet, product.guid, totalUsage)
-				
-				def effectiveFromDate = it.fromDate
-				def effectiveToDate = it.toDate
-				def effectiveDays
-				use(groovy.time.TimeCategory) {
-					effectiveDays = (effectiveToDate - effectiveFromDate).days
+					def effectiveFromDate = it.fromDate
+					def effectiveToDate = it.toDate
+					def effectiveDays
+					use(groovy.time.TimeCategory) {
+						effectiveDays = (effectiveToDate - effectiveFromDate).days
+					}
+					
+					def includedForPeriod = (effectivePrice.includedQuantity *effectiveDays * 1.0) / billingDays
+					
+					//For better precision
+					def includedAmountForPeriod = (effectivePrice.includedQuantity * effectivePrice.price * effectiveDays * 1.0) / billingDays
+					
+					effectivePeriodsDetails << ["fromDate": it.fromDate, "toDate": it.toDate, 
+												"usage": usage, "price": effectivePrice.price, 
+												"included": effectivePrice.includedQuantity, "includedForPeriod": includedForPeriod]
+					subTotal += usage*effectivePrice.price - includedAmountForPeriod
 				}
-				
-				def includedForPeriod = (effectivePrice.includedQuantity *effectiveDays * 1.0) / billingDays
-				
-				//For better precision
-				def includedAmountForPeriod = (effectivePrice.includedQuantity * effectivePrice.price * effectiveDays * 1.0) / billingDays
-				
-				effectivePeriodsDetails << ["fromDate": it.fromDate, "toDate": it.toDate, 
-											"usage": usage, "price": effectivePrice.price, 
-											"included": effectivePrice.includedQuantity, "includedForPeriod": includedForPeriod]
-				subTotal += usage*effectivePrice.price - includedAmountForPeriod
 			}
 			transactions << ["effectivePeriods": effectivePeriodsDetails,
 							 "fromDate": billingPeriodFromDate,
@@ -369,11 +385,13 @@ class BillingService {
 					
 					def productDetails = getProductTransactions(pricingSet, subscription.id,
 						product, billingPeriods, effectivePeriods, billingPeriodDays)
+					def productUnit = getProductUnit(subscription.id, product, fromDate, toDate)
 					subscriptionDetails << ["productGuid": productGuid, 
 											"name": productName, 
 											"category": category,
 											"subcategory": subcategory,
 											"region": region,
+											"productUnit": productUnit,
 											"details" : productDetails]
 				}
 			}
@@ -425,6 +443,7 @@ class BillingService {
 						category: currentProductDetailO.category,
 						subcategory: currentProductDetailO.subcategory,
 						region: currentProductDetailO.region,
+						unit: currentProductDetailO.productUnit,
 						subTotal: new BigDecimal(currentBillingPeriodO.subTotal * currencyRate).setScale(2, RoundingMode.HALF_UP),
 						totalUsage: currentBillingPeriodO.totalUsage,
 						usgeAndPricingDetails: effectivePeriods
