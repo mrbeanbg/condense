@@ -76,6 +76,9 @@ class SubscriptionController {
 	}
 
 	def obtain_usage(Subscription subscriptionInstance) {
+		println "============"
+		println "obtain_usage"
+		
 		if (subscriptionInstance == null) {
 			notFound()
 			return

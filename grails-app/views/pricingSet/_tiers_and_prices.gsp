@@ -14,7 +14,7 @@
 				from="${condense.ProductOverride$OverrideType?.values()}"
 				keys="${condense.ProductOverride$OverrideType.values()*.name()}" required="" value="" />
 		</div>
-		<div class="col-md-2"><g:message code="adjustment.label" default="Adjustment"/>: <g:field id="amount" name="amount" /></div>
+		<div class="col-md-3"><g:message code="adjustment.label" default="Adjustment"/>: <g:field id="amount" name="amount" /></div>
 		<div class="col-md-1">
 			<a href="#" class="btn btn-warning" id="addTier" data-productid="${currentProduct.id}">
 				<g:message code="add.tier.label" default="Add tier"/>

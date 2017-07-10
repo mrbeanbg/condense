@@ -2,6 +2,8 @@ package condense
 
 import grails.plugins.rest.client.RestBuilder
 import grails.transaction.Transactional
+import groovy.transform.Synchronized;
+
 import org.codehaus.groovy.grails.commons.GrailsApplication
 import org.springframework.util.LinkedMultiValueMap
 import org.springframework.util.MultiValueMap
@@ -15,6 +17,7 @@ class CspService {
 	def cacheresellerSAToken = [resellerSAToken: null, expiresOn: null]
 	def resellerId = null
 
+	@Synchronized
     def getUsage(subscriptionId, startTime, endTime) {
 		def subscription = Subscription.findBySubscriptionId(subscriptionId)
 		def cspProperties = grailsApplication.config.getProperty('csp')
@@ -86,6 +89,7 @@ class CspService {
 		return usage
     }
 	
+	@Synchronized
 	def obtainAzureADToken(appId, appKey, adAPIEndpoint, defaultDomain) {
 		print new Date().getTime()
 		print this.cachedAzureAdToken['expiresOn']
@@ -124,6 +128,7 @@ class CspService {
 		return adToken
 	}
 	
+	@Synchronized
 	def obtainResellerSAToken(cspAPIEndpoint, adToken) {
 		if (this.cacheresellerSAToken['resellerSAToken'] != null && new Date().getTime() <= this.cacheresellerSAToken['expiresOn']) {
 			print "reusing existing SA token"
@@ -158,6 +163,7 @@ class CspService {
 		return resellerSAToken
 	}
 	
+	@Synchronized
 	def getResellerID(cspAPIEndpoint, tenantId, resellerSAToken) {
 		// get the reseller ID
 		if (this.resellerId != null) return this.resellerId

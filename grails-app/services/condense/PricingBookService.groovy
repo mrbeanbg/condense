@@ -1,6 +1,8 @@
 package condense
 
 import grails.transaction.Transactional
+import groovy.transform.Synchronized;
+
 import org.hibernate.SessionFactory
 
 @Transactional
@@ -10,6 +12,7 @@ class PricingBookService {
 	def propertyInstanceMap = org.codehaus.groovy.grails.plugins.DomainClassGrailsPlugin.PROPERTY_INSTANCE_MAP
 	
 	@Transactional
+	@Synchronized
 	def importPricingBook(Date inEffectFrom, String csvFileContent) {
 		this.cleanUpGorm()
 		
@@ -144,6 +147,7 @@ class PricingBookService {
 		return newPricingBook
 	}
 	
+	@Synchronized
 	def cleanUpGorm() {
 		def session = sessionFactory.currentSession
 		session.flush()

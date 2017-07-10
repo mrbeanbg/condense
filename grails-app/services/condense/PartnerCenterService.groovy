@@ -2,11 +2,14 @@ package condense
 
 import grails.plugins.rest.client.RestBuilder
 import grails.transaction.Transactional
+
 import org.codehaus.groovy.grails.commons.GrailsApplication
 import org.codehaus.groovy.grails.web.json.JSONElement
 import org.springframework.util.LinkedMultiValueMap
 import org.springframework.util.MultiValueMap
+
 import grails.converters.JSON
+import groovy.transform.Synchronized;
 
 @Transactional
 class PartnerCenterService {
@@ -18,6 +21,7 @@ class PartnerCenterService {
 	def cachedPartnerCenterAppCredentialsToken = [token: null, expiresOn: null]
 	def resellerId = null
 
+	@Synchronized
     def getUsage(customerId, subscriptionId, startTime, endTime) {
 		def subscription = Subscription.findBySubscriptionId(subscriptionId)
 		def cspProperties = grailsApplication.config.getProperty('csp')
@@ -91,6 +95,7 @@ class PartnerCenterService {
 		return usage
     }
 	
+	@Synchronized
 	def obtainAzureADToken(appId, appKey, adAPIEndpoint, defaultDomain) {
 		print new Date().getTime()
 		print this.cachedAzureAdToken['expiresOn']
@@ -129,6 +134,7 @@ class PartnerCenterService {
 		return adToken
 	}
 	
+	@Synchronized
 	def getPartnerCenterAppCredentialsToken(partnerCenterApiRoot, adToken) {
 		print new Date().getTime()
 		print this.cachedPartnerCenterAppCredentialsToken['expiresOn']
@@ -166,7 +172,7 @@ class PartnerCenterService {
 		
 		return partnerCenterAppCredentialsToken
 	}
-	
+
 	private static String _removeUTF8BOM(String s) {
 		if (s.startsWith("\uFEFF")) {
 			s = s.substring(1);

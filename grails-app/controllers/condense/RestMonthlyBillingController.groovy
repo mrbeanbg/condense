@@ -48,7 +48,7 @@ class RestMonthlyBillingController {
 		def fromDate = c.getTime()
 		c.add(Calendar.MONTH, 1)
 		def toDate = c.getTime()
-		c.add(Calendar.DATE, 4)
+		c.add(Calendar.DATE, 3)
 		def safeToObtainDate = c.getTime()
 		
 		if (new Date() < safeToObtainDate) {

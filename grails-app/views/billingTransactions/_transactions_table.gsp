@@ -60,6 +60,7 @@
 																			<g:message code="prorated.included" default="Pro-Rata Included"/>: ${u.includedForPeriod}<br />
 																			<g:message code="usage" default="Usage"/>: ${u.usage}<br />
 																			<g:message code="price" default="Price"/>: ${u.price}<br />
+																			<br />
 																		</tr>
 																	</g:each>
 																</table>

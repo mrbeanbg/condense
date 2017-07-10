@@ -5,6 +5,8 @@ import org.codehaus.groovy.grails.web.sitemesh.GroovyPageLayoutFinder
 class CondenseFilters {
 	def passwordEncoder
 	static final AJAX_LAYOUT = "ajax"
+	
+	private static final log = org.apache.commons.logging.LogFactory.getLog(this)
 
 	def filters = {
 		applyLayoutForAjax(controller:'*', action:'*') {
@@ -14,6 +16,13 @@ class CondenseFilters {
 					params.isAjax = true
 					request[GroovyPageLayoutFinder.LAYOUT_ATTRIBUTE] = AJAX_LAYOUT
 				}
+			}
+		}
+		
+		paramLogger(controller:'*', action:'*') {
+			before = {
+				log.debug "path ${request.contextPath}"
+				log.debug "request params: $params"
 			}
 		}
 		

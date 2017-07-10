@@ -6,6 +6,7 @@ import java.util.Date;
 import org.hibernate.criterion.CriteriaSpecification;
 
 import grails.transaction.Transactional
+import groovy.transform.Synchronized;
 
 @Transactional
 class BillingService {
@@ -24,6 +25,7 @@ class BillingService {
 //		return !!(isSimpleBillingPolicy)
 //	}
 	
+	@Synchronized
 	def checkBillingPeriodDates(Date fromDate, Date toDate, Integer billingPeriodDays = null) {
 		if (fromDate >= toDate) {
 			throw new Exception("Invalid billing period from ${fromDate} to ${toDate}")
@@ -34,6 +36,7 @@ class BillingService {
 		}
 	}
 	
+	@Synchronized
 	def getOriginalTier(PricingBook currentPricingBook, String productGuid, BigDecimal quantity) {
 		def theProduct = Product.findByGuid(productGuid)
 		print currentPricingBook.id
@@ -53,6 +56,7 @@ class BillingService {
 		return matchedTier
 	}
 	
+	@Synchronized
 	def getEffectiveOverride(PricingSet currentPricingSet, String productGuid, BigDecimal quantity) {
 		def productOverrides = ProductOverride.where {
 			(pricingSet == currentPricingSet &&
@@ -76,6 +80,7 @@ class BillingService {
 	 * @return the price to be charge, 
 	 * the amount of included (free) units for the whole billing period
 	 */
+	@Synchronized
     def getEffectivePrice(PricingBook currentPricingBook, PricingSet pricingSet, String productGuid, BigDecimal quantity) {
 		//print "Quantity: ${quantity}"
 		def originalTier = getOriginalTier(currentPricingBook, productGuid, quantity)
@@ -111,6 +116,7 @@ class BillingService {
 	 * @param toDate the end of the billing period
 	 * @return List of PricingBook
 	 */
+	@Synchronized
 	def getEffectivePricingBooks(Date fromDate, Date toDate) {
 		print PricingBook.list()
 		def inPeriodPricingBooks = PricingBook.findAllByFromDateGreaterThanEqualsAndFromDateLessThan(fromDate, toDate).sort {it.fromDate}
@@ -140,6 +146,7 @@ class BillingService {
 	 * 
 	 * @return billing period chunks
 	 */
+	@Synchronized
 	def getBillingPeriods(Date fromDate, Date toDate, Integer billingPeriodDays = null) {
 
 		// Get the current month's billing date
@@ -180,6 +187,7 @@ class BillingService {
 	 * @param effectivePricingBooks
 	 * @return
 	 */
+	@Synchronized
 	def getSimpleEffectivePeriods(List billingPeriods, List effectivePricingBooks) {
 		def effectivePeriods = []
 		def currentPeriodIndex = 0
@@ -201,9 +209,12 @@ class BillingService {
 			effectivePeriods << ["fromDate": currentPeriod.fromDate, "toDate": currentPeriod.toDate, "pricingBook": effectivePricingBooks[i]]
 			currentPeriodIndex++
 		}
+		
+		println "effectivePeriods ${effectivePeriods}"
 		return effectivePeriods
 	}
 	
+	@Synchronized
 	def getComplexEffectivePeriods(List billingPeriods, List effectivePricingBooks) {
 		if (effectivePricingBooks.size() == 0) {
 			return []
@@ -244,14 +255,18 @@ class BillingService {
 	 * 
 	 * @return list of billing periods with relevant effective pricing books 
 	 */
+	@Synchronized
 	def getBillingEffectivePeriods(Date fromDate, Date toDate, Integer billingPeriodDays = null, Boolean isSimpleBillingPolicy = false) {
+		println "*** getBillingEffectivePeriods called with fromDate: ${fromDate}, toDate: ${toDate}, billingPeriodDays: ${billingPeriodDays}, isSimpleBillingPolicy: ${isSimpleBillingPolicy}"
 		def effectivePricingBooks = getEffectivePricingBooks(fromDate, toDate)
+		println "effectivePricingBooks: ${effectivePricingBooks}"
 		if (effectivePricingBooks.size() == 0) {
 			throw new Exception("No valid effecive pricing book found")
 		}
 		def billingEffectivePeriods = []
 		
 		def billingPeriods = getBillingPeriods(fromDate, toDate, billingPeriodDays)
+		println "billingPeriods: ${billingPeriods}"
 		if (isSimpleBillingPolicy) {
 			return getSimpleEffectivePeriods(billingPeriods, effectivePricingBooks)
 		}
@@ -259,11 +274,13 @@ class BillingService {
 		return getComplexEffectivePeriods(billingPeriods, effectivePricingBooks)
 	}
 	
+	@Synchronized
 	def getDaysInMonth(Date date) {
 		Calendar calendar = date.toCalendar();
 		return calendar.getActualMaximum(Calendar.DATE);		
 	}
 	
+	@Synchronized
 	def getProductUsage(Long subscriptionId, Product product, Date fromDate, Date toDate) {		
 		def allUsages = UsageRecord.createCriteria().list {
 			and {
@@ -278,6 +295,7 @@ class BillingService {
 		return totalUsage == null ? 0 : totalUsage
 	}
 	
+	@Synchronized
 	def getProductUnit(Long subscriptionId, Product product, Date fromDate, Date toDate) {
 		def firstUsage = UsageRecord.createCriteria().list {
 			and {
@@ -292,10 +310,13 @@ class BillingService {
 		return firstUsage[0].unit
 	}
 	
+	@Synchronized
 	def getProductTransactions(PricingSet pricingSet, Long subscriptionId, Product product, List billingPeriods, List effectivePeriods, Integer billingPeriodDays = null) {
+		println "getProductTransactions called with PricingSet: ${pricingSet}, subscriptionId: ${subscriptionId}, product: ${product}, billingPeriods: ${billingPeriods}, effectivePeriods: ${effectivePeriods}, billingPeriodDays: ${billingPeriodDays}"
 		if (billingPeriods.size() == 0) {
 			return []
 		}
+					
 		def transactions = []
 		billingPeriods.each {
 			def billingPeriodFromDate = it.fromDate
@@ -316,7 +337,13 @@ class BillingService {
 				def usage = getProductUsage(subscriptionId, product, it.fromDate, it.toDate)
 				
 				if (usage > 0) {
-					def effectivePrice = getEffectivePrice(it.pricingBook, pricingSet, product.guid, totalUsage)
+					def tiersRepresentations = calculateTiersRepresentations(it.pricingBook, pricingSet, product)
+					def expectedPricingTiers = tiersRepresentations['expectedPricesRepresentation']
+					if (expectedPricingTiers.size() == 0) {
+						return []
+					}
+					println "----------------------"
+					println "expectedPricingTiers: " + expectedPricingTiers
 					
 					def effectiveFromDate = it.fromDate
 					def effectiveToDate = it.toDate
@@ -325,30 +352,112 @@ class BillingService {
 						effectiveDays = (effectiveToDate - effectiveFromDate).days
 					}
 					
-					def includedForPeriod = (effectivePrice.includedQuantity *effectiveDays * 1.0) / billingDays
+					def actualExpectedPricingTiers = expectedPricingTiers
+					def maxTierIndex = 0
+					def lastIncludedQuantity = expectedPricingTiers[0]['includedQuantity']
 					
-					//For better precision
-					def includedAmountForPeriod = (effectivePrice.includedQuantity * effectivePrice.price * effectiveDays * 1.0) / billingDays
+					if (expectedPricingTiers.size() > 1) {
+						def minReverseTierFound = false
+						def resultingReversedExpectedTiers = []
+						expectedPricingTiers.reverse().each { tier ->
+							if (minReverseTierFound == false) {
+								if (tier['startQuantity'] == 0) {
+									minReverseTierFound = true
+									lastIncludedQuantity = tier['includedQuantity']
+								} else if (usage > tier['startQuantity'] + tier['includedQuantity']) {
+										minReverseTierFound = true
+										lastIncludedQuantity = tier['includedQuantity']
+								}
+							}
+							
+							if (minReverseTierFound) {
+								resultingReversedExpectedTiers << tier
+							}
+						}
+						//actualExpectedPricingTiers = expectedPricingTiers.reverse().takeRight(expectedPricingTiers.size() - minReverseTierIndex).reverse()
+						actualExpectedPricingTiers = resultingReversedExpectedTiers.reverse()
+					}
 					
-					effectivePeriodsDetails << ["fromDate": it.fromDate, "toDate": it.toDate, 
-												"usage": usage, "price": effectivePrice.price, 
-												"included": effectivePrice.includedQuantity, "includedForPeriod": includedForPeriod]
-					subTotal += usage*effectivePrice.price - includedAmountForPeriod
+					println "actualExpectedPricingTiers: " + actualExpectedPricingTiers
+					
+					def usagePricesAndIncludes = []
+					def usageReminder = usage
+					println "usage: ${usage}"
+					actualExpectedPricingTiers.eachWithIndex { actualExpectedPricingTier, index ->
+						println ">>>>>>tier: ${actualExpectedPricingTier}"
+						
+						def expectedPrice = actualExpectedPricingTier['expectedPrice']
+						def includedQuantity = 0
+						if (index == 0) {
+							includedQuantity = lastIncludedQuantity
+						}
+							
+						def usageForCurrentTier = 0
+						if (actualExpectedPricingTier['endQuantity'] == 'Infinity') {
+							println "+++++++++INDEX ${index}"
+							usageForCurrentTier = usageReminder
+						} else {
+							println "+++++++++INDEXo ${index}"
+							usageForCurrentTier = usageReminder.min(actualExpectedPricingTier['endQuantity'] + includedQuantity)
+						}
+						
+						println "usageForCurrentTier: ${usageForCurrentTier}"
+
+						usageReminder = usageReminder - usageForCurrentTier
+						
+						println "usageReminder: ${usageReminder}"
+						
+						
+						
+						def includedForPeriod = (includedQuantity * effectiveDays * 1.0) / billingDays
+						
+						println "includedForPeriod: ${includedForPeriod}"
+						
+						//For better precision
+						def includedAmountForPeriod = (includedQuantity * expectedPrice * effectiveDays * 1.0) / billingDays
+						
+						println "includedAmountForPeriod: ${includedAmountForPeriod}"
+						
+						usagePricesAndIncludes << ["usage": usageForCurrentTier,
+							"price": expectedPrice,
+							"included": includedQuantity,
+							"includedForPeriod": includedForPeriod,
+							"includedAmountForPeriod": includedAmountForPeriod
+						]
+						
+						println "usagePricesAndIncludes: ${usagePricesAndIncludes}"
+
+						subTotal += usageForCurrentTier * expectedPrice - includedAmountForPeriod
+						
+						println "subTotal: ${subTotal}"
+					}
+					
+					effectivePeriodsDetails << ["fromDate": it.fromDate,
+						"toDate": it.toDate,
+						"usagePricesAndIncludes": usagePricesAndIncludes
+					]
+					
 				}
 			}
+			
+			println "effectivePeriodsDetails: ${effectivePeriodsDetails}"
+			
 			transactions << ["effectivePeriods": effectivePeriodsDetails,
-							 "fromDate": billingPeriodFromDate,
-							 "toDate": billingPeriodToDate,
-							 "subTotal": subTotal > 0 ? subTotal : 0,
-							 "totalUsage": totalUsage]
+				"fromDate": billingPeriodFromDate,
+				"toDate": billingPeriodToDate,
+				"subTotal": subTotal > 0 ? subTotal : 0,
+				"totalUsage": totalUsage]
 		}
+		
+		println "transactions: ${transactions}"
 		return transactions
 	}
 	
+	@Synchronized
 	def getSubscriptionTransactions(Subscription subscription, Date fromDate, Date toDate, 
 			Integer billingPeriodDays = null, Boolean isSimpleBillingPolicy = false, CurrencyRate currencyRate) {
 		checkBillingPeriodDates(fromDate, toDate, billingPeriodDays)
-		print "===== getSubscriptionUsage ${subscription}"
+		println "===== getSubscriptionUsage ${subscription}"
 		//assumed that the records are collected daily
 		def allUsages = UsageRecord.createCriteria().list {
 			and {
@@ -370,6 +479,10 @@ class BillingService {
 			def effectivePeriods = getBillingEffectivePeriods(fromDate, toDate, billingPeriodDays, isSimpleBillingPolicy)
 			
 			allUsages.each {
+//				if (it.guid != '0f521674-5ebd-4679-bd97-8bc2ac4a9040' && it.guid != '077a07bb-20f8-4bc6-b596-ab7211a1e247') {
+//					return
+//				}
+				
 				if (it.totalUsage > 0) {
 					def productGuid = it.guid
 					
@@ -383,16 +496,47 @@ class BillingService {
 					def subcategory = product.subcategory?.name
 					def region = product.region.name
 					
-					def productDetails = getProductTransactions(pricingSet, subscription.id,
+					
+					
+					def productsDetails = getProductTransactions(pricingSet, subscription.id,
 						product, billingPeriods, effectivePeriods, billingPeriodDays)
 					def productUnit = getProductUnit(subscription.id, product, fromDate, toDate)
+					
+					println groovy.json.JsonOutput.toJson(productsDetails)
+					
+					def newProductsDetails = []
+					productsDetails.each { productDetail ->
+						productDetail['effectivePeriods'].each { effectivePeriod ->
+							effectivePeriod['usagePricesAndIncludes'].each { usagePricesAndIncludes ->
+								def newEffectivePeriodsDetails = []
+								newEffectivePeriodsDetails << [
+									"fromDate": effectivePeriod.fromDate,
+									"toDate": effectivePeriod.toDate,
+									"usage": usagePricesAndIncludes['usage'],
+									"price": usagePricesAndIncludes['price'],
+									"included": usagePricesAndIncludes['included'],
+									"includedForPeriod": usagePricesAndIncludes['includedForPeriod']
+								]
+								
+								def subTotal = usagePricesAndIncludes['usage'] * usagePricesAndIncludes['price'] - usagePricesAndIncludes['includedAmountForPeriod']
+								newProductsDetails << ["effectivePeriods": newEffectivePeriodsDetails,
+									"fromDate": productDetail['fromDate'],
+									"toDate": productDetail['toDate'],
+									"subTotal": subTotal > 0 ? subTotal : 0,
+									"totalUsage": usagePricesAndIncludes['usage']]
+							}
+						}
+					}
+					
+					println groovy.json.JsonOutput.toJson(newProductsDetails)
+					
 					subscriptionDetails << ["productGuid": productGuid, 
 											"name": productName, 
 											"category": category,
 											"subcategory": subcategory,
 											"region": region,
 											"productUnit": productUnit,
-											"details" : productDetails]
+											"details" : newProductsDetails]
 				}
 			}
 		}
@@ -402,6 +546,7 @@ class BillingService {
 		return subscriptionDetails
 	}
 	
+	@Synchronized
 	private changeTheSubscriptionDetailsRepresentations(subscriptionInstance, subscriptionDetails, currencyRateInstance) {
 		def currencyRate = 1
 		def currencyAbbreviation = "USD"
@@ -518,6 +663,7 @@ class BillingService {
 	 * 
 	 * @return
 	 */
+	@Synchronized
 	def getCustomerTransactions(Customer customer, Date fromDate, Date toDate, Integer billingPeriodDays = null) {
 		checkBillingPeriodDates(fromDate, toDate, billingPeriodDays)
 		def subscriptionDetails = []
@@ -526,6 +672,120 @@ class BillingService {
 		}
 		// TODO: return also the grand total and any other requested summary
 		return ["subscriptions": subscriptionDetails]
+	}
+	
+	@Synchronized
+	def calculateTiersRepresentations(PricingBook currentPricingBook, PricingSet currentPricingSet, Product currentProduct) {
+		
+		def tierDefinitions = TierDefinition.where {
+			pricingBook == currentPricingBook
+			product == currentProduct
+		}.list(sort: "startQuantity", order: "asc")
+		
+		def productOverrides = ProductOverride.where {
+			pricingSet == currentPricingSet
+			product == currentProduct
+		}.list(sort: "startQuantity", order: "asc")
+		
+		def overridesRepresentation = []
+		for (def i=0;i<productOverrides.size();i++) {
+			def currentEndQuantity = (i<productOverrides.size()-1) ? productOverrides.get(i+1).startQuantity : 'Infinity'
+			overridesRepresentation << [
+				id: productOverrides.get(i).id,
+				includedQuantity: productOverrides.get(i).includedQuantity,
+				startQuantity: productOverrides.get(i).startQuantity,
+				endQuantity: currentEndQuantity,
+				overrideType: productOverrides.get(i).overrideType,
+				amount: productOverrides.get(i).amount
+				]
+		}
+		
+		def tierDefinitionsRepresentation = []
+		for (def i=0;i<tierDefinitions.size();i++) {
+			def currentEndQuantity = (i<tierDefinitions.size()-1) ? tierDefinitions.get(i+1).startQuantity : 'Infinity'
+			tierDefinitionsRepresentation << [
+				includedQuantity: tierDefinitions.get(i).includedQuantity,
+				startQuantity: tierDefinitions.get(i).startQuantity,
+				endQuantity: currentEndQuantity,
+				price: tierDefinitions.get(i).price
+				]
+		}
+		
+		def expectedPrices = []
+		
+		if (!tierDefinitionsRepresentation.empty) {
+			if (overridesRepresentation.empty) {
+				tierDefinitions.each {
+					expectedPrices << [
+							includedQuantity: it.includedQuantity,
+							startQuantity: it.startQuantity,
+							originalPrice: it.price,
+							adjustment: "${currentPricingSet.defaultOverride} PERCENT",
+							expectedPrice: it.price * (1 + currentPricingSet.defaultOverride/100)
+						]
+				}
+			} else {
+				def newStarts = []
+				newStarts = (overridesRepresentation*.startQuantity + tierDefinitionsRepresentation*.startQuantity).unique()
+				
+				newStarts.each { theNewStart ->
+					def theOverride = overridesRepresentation.find {
+						if (it.endQuantity instanceof String && it.endQuantity == "Infinity") {
+							return it.startQuantity <= theNewStart
+						}
+						return it.startQuantity <= theNewStart && it.endQuantity > theNewStart
+					}
+					
+					def theTier = tierDefinitionsRepresentation.find {
+						if (it.endQuantity == "Infinity") {
+							return it.startQuantity <= theNewStart
+						}
+						return it.startQuantity <= theNewStart && it.endQuantity > theNewStart
+					}
+					
+					def adjustment = ""
+					def expectedPrice = 0
+					if (theOverride.overrideType == ProductOverride.OverrideType.PERCENT) {
+						adjustment = "${theOverride.amount} PERCENT"
+						expectedPrice = theTier.price * (1 + theOverride.amount/100)
+					} else if (theOverride.overrideType == ProductOverride.OverrideType.DELTA) {
+						adjustment = "${theOverride.amount} DELTA"
+						expectedPrice = theTier.price + theOverride.amount
+					} else {
+						adjustment = "${theOverride.amount} FIXED"
+						expectedPrice = theOverride.amount
+					}
+					
+					expectedPrices << [
+						includedQuantity: theOverride.includedQuantity,
+						startQuantity: theNewStart,
+						originalPrice: theTier.price,
+						adjustment: adjustment,
+						expectedPrice: expectedPrice
+					]
+				}
+			}
+		}
+		
+		def expectedPricesRepresentation = []
+		
+		for (def i=0;i<expectedPrices.size();i++) {
+			def currentEndQuantity = (i<expectedPrices.size()-1) ? expectedPrices.get(i+1).startQuantity : 'Infinity'
+			expectedPricesRepresentation << [
+				includedQuantity: expectedPrices.get(i).includedQuantity,
+				startQuantity: expectedPrices.get(i).startQuantity,
+				endQuantity: currentEndQuantity,
+				originalPrice: expectedPrices.get(i).originalPrice,
+				adjustment: expectedPrices.get(i).adjustment,
+				expectedPrice: expectedPrices.get(i).expectedPrice
+				]
+		}
+
+		return [
+			overridesRepresentation: overridesRepresentation,
+			tierDefinitionsRepresentation: tierDefinitionsRepresentation,
+			expectedPricesRepresentation: expectedPricesRepresentation
+		]
 	}
 
 }

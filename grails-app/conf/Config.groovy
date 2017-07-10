@@ -133,6 +133,8 @@ log4j.main = {
 	
 	//trace 'org.hibernate.type'
 	//debug 'org.hibernate.SQL'
+	trace 'org.codehaus.groovy.grails.web'
+	debug 'condense'
 }
 
 
